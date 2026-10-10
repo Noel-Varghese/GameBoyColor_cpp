@@ -1,0 +1,29 @@
+#ifndef __LOGGER_H__
+//IF NOT DEFINED IS A PREPROCESSOR DIRECTIVE USED FOR CONDITIONAL COMPILATION
+//IT CHECKS WHETHER A SPECIFIED MACRO HAS NOT BEEN DEFINED EARLIER IN THE FILE OR IN AN INCLUDED FILE
+#define __LOGGER_H__
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <memory>
+using namespace std;
+
+enum class ELogLevel{
+    NONE = 0,
+    ERROR = 1,
+    WARN = 2,
+    INFO = 3,
+    DEBUG = 4
+};
+
+class TLogger{
+  ELogLevel m_LogLevel;
+  static shared_ptr<TLogger> m_LoggerInstance;//manages the logger system
+ public:
+  TLogger();
+  void log(string msg, ELogLevel loglevel);
+  void setLogLevel(ELogLevel loglevel);
+  static shared_ptr<TLogger> getInstance();
+};
+#endif
+
