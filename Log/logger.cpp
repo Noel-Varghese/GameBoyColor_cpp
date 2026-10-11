@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <cstring>
 #include <string>
 #include "logger.h"
 
@@ -11,7 +12,7 @@ TLogger::TLogger():m_LogLevel(ELogLevel::DEBUG){//constructor
 
 }
 
-void TLogger::log(string msg, ELogLevel logLevel){
+void TLogger::log(const string& msg, ELogLevel logLevel){
     string buff = "";
     if(logLevel<=m_LogLevel){
         switch(logLevel){
@@ -29,12 +30,13 @@ void TLogger::log(string msg, ELogLevel logLevel){
                 break;
             default:break;
         }
+	buff += msg;
    	buff+= "\033[0m\n";
         cout<<buff;
     }
 }
 
-void TLogger::logAt(const string& msg, ELogLevel loglevel, const char* file, int line){
+void TLogger::logAt(const string& msg, ELogLevel logLevel, const char* file, int line){
   if(logLevel == ELogLevel::NONE || logLevel > m_LogLevel){
     return;
   }
