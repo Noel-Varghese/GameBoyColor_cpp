@@ -1,0 +1,25 @@
+#ifndef CMDLINEPARSER_H
+#define CMDLINEPARSER_H
+#include <iostream>
+#include <string>
+#include "../Log/logger.h"
+
+class TCmdLineParser{
+  std::string m_romFileName;
+  int m_logLevel;
+  bool m_helpReq;
+
+ public:
+  TCmdLineParser();
+  void PrintHelpMessage();
+  bool ParseCmdLine(int argc, char** argv);
+  void SetRomFileName(const std::string& name);
+  void SetLogLevel(int LogLevel);
+  bool isRomFileSet() const;
+  std::string getRomFileName() const;
+  bool isLogLevelSet() const;
+  int getLogLevel() const;
+  bool isHelpRequested() const;
+};
+
+#endif
