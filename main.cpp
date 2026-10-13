@@ -5,6 +5,7 @@
 #include "Log/logger.h"
 #include "RomLoader/RomLoader.h"
 #include "CMDLineParser/CmdLineParser.h"
+#include "Cartridge/Cartridge.h"
 
 using namespace std;
 //argc = how many things were typed on the command line
@@ -26,12 +27,10 @@ int main(int argc, char* argv[]){
     Log_ERROR("failed to load rom, shutting down");
     return 1;
   }
-  string title;
-  for(int i = 0x0134; i < 0x0144; i++){
-    if(rom[i] == 0) break;  // the title ends at the first 0 byte
-    title += static_cast<char>(rom[i]);
+  TCartridge cart(move(rom));
+  if(!cart.IsValid()){
+    Log_ERROR("INVALID ROM, SHUTTING DOWN");
+    return 1;
   }
-  Log_INFO("Game title: " + title);
- 
   return 0;
 }
