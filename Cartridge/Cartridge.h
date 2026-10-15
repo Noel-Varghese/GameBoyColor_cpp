@@ -4,7 +4,7 @@
 #include <cstdint>
 
 const int MAX_CART_SIZE = 8*1024*1024; //defining the max cartridge size can be either 1MB or 8MB
-
+extern bool is_loaded;//to check if a game is loaded
 //defining the Cartridge header
 struct Cartridge_info{
   uint8_t EntryPoint[4];//hardware reserves 4bytes
