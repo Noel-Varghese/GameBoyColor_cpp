@@ -1,61 +1,26 @@
 #ifndef CARTRIDGE_H
 #define CARTRIDGE_H
-#include <string>
-#include <cstddef>
-#include <vector>
+
 #include <cstdint>
 
-enum class EMbcType{
-  NONE,
-  MBC1,
-    MBC2,
-    MBC3,
-    MBC5,
-    UNKNOWN
-    };
-  class TCartridge{
-  public:
-    explicit TCartridge(std::vector<uint8_t> rom);
+const int MAX_CART_SIZE = 8*1024*1024; //defining the max cartridge size can be either 1MB or 8MB
 
-    bool IsValid() const;
-    std::string GetTitle() const;
-    EMbcType GetMbcType() const;
-    bool HasRam() const;
-    bool HasBattery() const;
-    bool HasTimer() const;
-    bool HasRumble() const;
-    bool IsCgb() const;
-    bool IsSgb() const;
-    size_t GetRomBankCount() const;
-    size_t GetRamSize() const;
-    bool IsHeaderCheckSumValid() const;
-    uint8_t read(uint16_t address) const;
-  private:
-    void ParseHeader();
-    void ParseFlags();
-    void ParseTitle();
-    void ParseType();
-    void ParseRomSize();
-    void ParseRamSize();
-    void VerifyCheckSum();
-    void SetType(EMbcType type, bool ram, bool battery, bool timer, bool rumble);
-    void PrintSummary() const;
-    static const char* MbcName(EMbcType type);
-    
-    std::vector<uint8_t> m_rom;
-    std::string m_title;
-    EMbcType m_mbcType = EMbcType::UNKNOWN;
-    bool m_valid = false;
-    bool m_hasRam = false;
-    bool m_hasBattery = false;
-    bool m_hasTimer = false;
-    bool m_hasRumble = false;
-    bool m_isCgb = false;
-    bool m_isSgb = false;
-    size_t m_romBankCount = 0;
-    size_t m_ramSize = 0;
-    bool m_checkSumValid = false;
-  };
+//defining the Cartridge header
+struct Cartridge_info{
+  uint8_t EntryPoint[4];//hardware reserves 4bytes
+  uint8_t Nintendo_logo[48];//The cartridge header contains a 48-byte Nintendo logo field, and the boot ROM checks this data
+  uint8_t title[15];//constains title of the game in upper ascii
+  bool is_CGB;
+  uint8_t New_Licensee_Code[2];//because the licencee code is a two bit ascii code 
+  bool is_SGB;
+  uint8_t Cartridge_type;
+  uint8_t ROM_size;
+  uint8_t RAM_size;
+  uint8_t Destination_code;
+  uint8_t Old_licensee_code;
+  uint8_t Mask_ROM_verNummer;
+  uint8_t Header_Checksum;
+  uint16_t Global_Checksum;
+}
 
 #endif
-  
