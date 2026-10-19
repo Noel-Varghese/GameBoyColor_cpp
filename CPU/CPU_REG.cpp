@@ -32,47 +32,31 @@ const struct GameBoyCPU instructions = {
   {"DEC E", 0, cpu_DEC_E},//0x1D
   {"LD E,n8", 1, cpu_LD_E_n},//0x1E
   {"RRA", 0, cpu_RRA},//0x1F
-  ,//0x20
-  ,//0x21
-  ,//0x22
-  ,//0x23
-  ,//0x24
-  ,//0x25
-  ,//0x26
-  ,//0x27
-  ,//0x28
-  ,//0x29
-  ,//0x2A
-  ,//0x2B
-  ,//0x2C
-  ,//0x2D
-  ,//0x2E
-  ,//0x2F
-  ,//0x20
-  ,//0x21
-  ,//0x22
-  ,//0x23
-  ,//0x24
-  ,//0x25
-  ,//0x26
-  ,//0x27
-  ,//0x28
-  ,//0x29
-  ,//0x2A
-  ,//0x2B
-  ,//0x2C
-  ,//0x2D
-  ,//0x2E
-  ,//0x2F
-  ,//0x30
-  ,//0x31
-  ,//0x32
-  ,//0x33
-  ,//0x34
-  ,//0x35
-  ,//0x36
-  ,//0x37
-  ,//0x38
+  {"JR NC,e8", 1, cpu_JR_NC_n},//0x20
+  {"LD HL,n16", 2, cpu_LD_HL_nn},//0x21
+  {"LD[HL+], A", 0, cpu_LD_HL_A},//0x22
+  {"INC HL", 0, cpu_INC_HL},//0x23
+  {"INC H", 0, cpu_INC_H},//0x24
+  {"DEC H", 0, cpu_DEC_H},//0x25
+  {"LD H,n8", 1, cpu_LD_H_n},//0x26
+  {"DAA", 0, cpu_DAA},//0x27
+  {"JR Z, e8", 1, cpu_JR_Z_n},//0x28
+  {"ADD HL, HL", 0, cpu_HL_HL},//0x29
+  {"LD A,[HL+]", 0, cpu_LD_A_HL},//0x2A
+  {"DEC HL", 0, cpu_DEC_HL},//0x2B
+  {"INC L", 0, cpu_INC_L},//0x2C
+  {"DEC L", 0, cpu_DEC_L},//0x2D
+  {"LD L,n8", 1, cpu_LD_L_n},//0x2E
+  {"CPL", 0, cpu_CPL},//0x2F
+  {"JR NC,e8", 1, JR_NC_n},//0x30
+  {"LS SP, n16", 2, cpu_LS_SP_nn},//0x31
+  {"LD[HL-],A", 0, cpu_LD_HL_A},//0x32
+  {"INC SP", 0, cpu_INC_SP},//0x33
+  {"INC [HL]", 0, cpu_INC_HL},//0x34
+  {"DEC [HL]", 0, cpu_DEC_HL},//0x35
+  {"LD[HL], n8", 1, cpu_LD_HL},//0x36
+  {"SCF", 0, cpu_SCF},//0x37
+  {"JR C,e8", 1, cpu_JR_C_n},//0x38
   ,//0x39
   ,//0x3A
   ,//0x3B
