@@ -96,180 +96,164 @@ const struct GameBoyCPU instructions = {
   {"LD E, L", 0, cpu_LD_E_L},//0x5D
   {"LD E, [HL]", 0, cpu_LD_E_HL},//0x5E
   {"LD E, A", 0, cpu_LD_E_A},//0x5F
-  ,//0x60
-  ,//0x61
-  ,//0x62
-  ,//0x63
-  ,//0x64
-  ,//0x65
-  ,//0x66
-  ,//0x67
-  ,//0x68
-  ,//0x69
-  ,//0x6A
-  ,//0x6B
-  ,//0x6C
-  ,//0x6D
-  ,//0x6E
-  ,//0x6F
-  ,//0x70
-  ,//0x71
-  ,//0x72
-  ,//0x73
-  ,//0x74
-  ,//0x75
-  ,//0x76
-  ,//0x77
-  ,//0x78
-  ,//0x79
-  ,//0x7A
-  ,//0x7B
-  ,//0x7C
-  ,//0x7D
-  ,//0x7E
-  ,//0x7F
-  ,//0x80
-  ,//0x81
-  ,//0x82
-  ,//0x83
-  ,//0x84
-  ,//0x85
-  ,//0x86
-  ,//0x87
-  ,//0x88
-  ,//0x89
-  ,//0x8A
-  ,//0x8B
-  ,//0x8C
-  ,//0x8D
-  ,//0x8E
-  ,//0x8F
-  ,//0x90
-  ,//0x91
-  ,//0x92
-  ,//0x93
-  ,//0x94
-  ,//0x95
-  ,//0x96
-  ,//0x97
-  ,//0x98
-  ,//0x99
-  ,//0x9A
-  ,//0x9B
-  ,//0x9C
-  ,//0x9D
-  ,//0x9E
-  ,//0x9F
-  ,//0xA0
-  ,//0xA1
-  ,//0xA2
-  ,//0xA3
-  ,//0xA4
-  ,//0xA5
-  ,//0xA6
-  ,//0xA7
-  ,//0xA8
-  ,//0xA9
-  ,//0xAA
-  ,//0xAB
-  ,//0xAC
-  ,//0xAD
-  ,//0xAE
-  ,//0xAF
-  ,//0xB0
-  ,//0xB1
-  ,//0xB2
-  ,//0xB3
-  ,//0xB4
-  ,//0xB5
-  ,//0xB6
-  ,//0xB7
-  ,//0xB8
-  ,//0xB9
-  ,//0xBA
-  ,//0xBB
-  ,//0xBC
-  ,//0xBD
-  ,//0xBE
-  ,//0xBF
-  ,//0xC0
-  ,//0xC1
-  ,//0xC2
-  ,//0xC3
-  ,//0xC4
-  ,//0xC5
-  ,//0xC6
-  ,//0xC7
-  ,//0xC8
-  ,//0xC9
-  ,//0xCA
-  ,//0xCB
-  ,//0xCC
-  ,//0xCD
-  ,//0xCE
-  ,//0xCF
-  ,//0xD0
-  ,//0xD1
-  ,//0xD2
-  ,//0xD3
-  ,//0xD4
-  ,//0xD5
-  ,//0xD6
-  ,//0xD7
-  ,//0xD8
-  ,//0xD9
-  ,//0xDA
-  ,//0xDB
-  ,//0xDC
-  ,//0xDD
-  ,//0xDE
-  ,//0xDF
-  ,//0xE0
-  ,//0xE1
-  ,//0xE2
-  ,//0xE3
-  ,//0xE4
-  ,//0xE5
-  ,//0xE6
-  ,//0xE7
-  ,//0xE8
-  ,//0xE9
-  ,//0xEA
-  ,//0xEB
-  ,//0xEC
-  ,//0xED
-  ,//0xEE
-  ,//0xEF
-  ,//0xE0
-  ,//0xE1
-  ,//0xE2
-  ,//0xE3
-  ,//0xE4
-  ,//0xE5
-  ,//0xE6
-  ,//0xE7
-  ,//0xE8
-  ,//0xE9
-  ,//0xEA
-  ,//0xEB
-  ,//0xEC
-  ,//0xED
-  ,//0xEE
-  ,//0xEF
-  ,//0xF0
-  ,//0xF1
-  ,//0xF2
-  ,//0xF3
-  ,//0xF4
-  ,//0xF5
-  ,//0xF6
-  ,//0xF7
-  ,//0xF8
-  ,//0xF9
-  ,//0xFA
-  ,//0xFB
-  ,//0xFC
-  ,//0xFD
-  ,//0xFE
-  ,//0xFF
+  {"LD H, B", 0, cpu_LD_H_B},//0x60
+  {"LD H, C", 0, cpu_LD_H_C},//0x61
+  {"LD H, D", 0, cpu_LD_H_D},//0x62
+  {"LD H, E", 0, cpu_LD_H_E},//0x63
+  {"LD H, H", 0, cpu_LD_H_H},//0x64
+  {"LD H, L", 0, cpu_LD_H_L},//0x65
+  {"LD H, [HL]", 0, cpu_LD_H_HL},//0x66
+  {"LD H, A", 0, cpu_LD_H_A},//0x67
+  {"LD L, B", 0, cpu_LD_L_B},//0x68
+  {"LD L, C", 0, cpu_LD_L_C},//0x69
+  {"LD L, D", 0, cpu_LD_L_D},//0x6A
+  {"LD L, E", 0, cpu_LD_L_E},//0x6B
+  {"LD L, H",0, cpu_LD_L_H},//0x6C
+  {"LD L, L", 0, cpu_LD_L_L},//0x6D
+  {"LD L, [HL]", 0, cpu_LD_L_HL},//0x6E
+  {"LD L, A", 0, cpu_LD_L_A },//0x6F
+  {"LD[HL], B", 0, cpu_LD_HL_B},//0x70
+  {"LD [HL], C", 0, cpu_LD_HL_C},//0x71
+  {"LD [HL], D", 0, cpu_LD_HL_D},//0x72
+  {"LD [HL], E", 0, cpu_LD_HL_E},//0x73
+  {"LD [HL], H", 0, cpu_LD_HL_H},//0x74
+  {"LD [HL], L", 0, cpu_LD_HL_L},//0x75
+  {"HALT", 0, cpu_HALT},//0x76
+  {"LD [HL], A", 0, cpu_LD_HL_A},//0x77
+  {"LD A, B", 0, cpu_LD_A_B},//0x78
+  {"LD A, C", 0, cpu_LD_A_C},//0x79
+  {"LD A, D", 0, cpu_LD_A_D},//0x7A
+  {"LD A, E", 0, cpu_LD_A_E},//0x7B
+  {"LD A, H", 0, cpu_LD_A_H},//0x7C
+  {"LD A, L", 0, cpu_LD_A_L},//0x7D
+  {"LD A, [HL]", 0, cpu_LD_A_HL},//0x7E
+  {"LD A, A", 0, cpu_LD_A_A},//0x7F
+  {"ADD A, B", 0, cpu_ADD_A_B},//0x80
+  {"ADD A, C", 0, cpu_ADD_A_C},//0x81
+  {"ADD A, D", 0, cpu_ADD_A_D},//0x82
+  {"ADD A, E", 0, cpu_ADD_A_E},//0x83
+  {"ADD A, H", 0, cpu_ADD_A_H},//0x84
+  {"ADD A, L", 0, cpu_ADD_A_L},//0x85
+  {"ADD A, [HL]", 0, cpu_ADD_A_HL},//0x86
+  {"ADD A, A", 0, cpu_ADD_A_A},//0x87
+  {"ADC A, B", 0, cpu_ADC_A_B},//0x88
+  {"ADC A, C", 0, cpu_ADC_A_C},//0x89
+  {"ADC A, D", 0, cpu_ADC_A_D},//0x8A
+  {"ADC A, E", 0, cpu_ADC_A_E},//0x8B
+  {"ADC A, H", 0, cpu_ADC_A_H},//0x8C
+  {"ADC A, L", 0, cpu_ADC_A_L},//0x8D
+  {"ADC A, [HL]", 0, cpu_ADC_A_HL},//0x8E
+  {"ADC A, A", 0, cpu_ADC_A_A},//0x8F
+  {"SUB A, B", 0, cpu_SUB_A_B},//0x90
+  {"SUB A, C", 0, cpu_SUB_A_C},//0x91
+  {"SUB A, D", 0, cpu_SUB_A_D},//0x92
+  {"SUB A, E", 0, cpu_SUB_A_E},//0x93
+  {"SUB A, H", 0, cpu_SUB_A_H},//0x94
+  {"SUB A, L", 0, cpu_SUB_A_L},//0x95
+  {"SUB A, [HL]", 0, cpu_SUB_A_HL},//0x96
+  {"SUB A, A", 0, cpu_SUB_A_A},//0x97
+  {"SBC A, B", 0, cpu_SBC_A_B},//0x98
+  {"SBC A, C", 0, cpu_SBC_A_C},//0x99
+  {"SBC A, D", 0, cpu_SBC_A_D},//0x9A
+  {"SBC A, E", 0, cpu_SBC_A_E},//0x9B
+  {"SBC A, H", 0, cpu_SBC_A_H},//0x9C
+  {"SBC A, L", 0, cpu_SBC_A_L},//0x9D
+  {"SBC A, [HL]", 0, cpu_SBC_A_HL},//0x9E
+  {"SBC A, A", 0, cpu_SBC_A_A},//0x9F
+  {"AND A, B", 0, cpu_AND_A_B},//0xA0
+  {"AND A, C", 0, cpu_AND_A_C},//0xA1
+  {"AND A, D", 0, cpu_AND_A_D},//0xA2
+  {"AND A, E", 0, cpu_AND_A_E},//0xA3
+  {"AND A, H", 0, cpu_AND_A_H},//0xA4
+  {"AND A, L", 0, cpu_AND_A_L},//0xA5
+  {"AND A, [HL]", 0, cpu_AND_A_HL},//0xA6
+  {"AND A, A", 0, cpu_AND_A_A},//0xA7
+  {"XOR A, B", 0, cpu_XOR_A_B},//0xA8
+  {"XOR A, C", 0, cpu_XOR_A_C},//0xA9
+  {"XOR A, D", 0, cpu_XOR_A_D},//0xAA
+  {"XOR A, E", 0, cpu_XOR_A_E},//0xAB
+  {"XOR A, H", 0, cpu_XOR_A_H},//0xAC
+  {"XOR A, L", 0, cpu_XOR_A_L},//0xAD
+  {"XOR A, [HL]", 0, cpu_XOR_A_HL},//0xAE
+  {"XOR A, A", 0, cpu_XOR_A_A},//0xAF
+  {"OR A, B", 0, cpu_OR_A_B},//0xB0
+  {"OR A, C", 0, cpu_OR_A_C},//0xB1
+  {"OR A, D", 0, cpu_OR_A_D},//0xB2
+  {"OR A, E", 0, cpu_OR_A_E},//0xB3
+  {"OR A, H", 0, cpu_OR_A_H},//0xB4
+  {"OR A, L", 0, cpu_OR_A_L},//0xB5
+  {"OR A, [HL]", 0, cpu_OR_A_HL},//0xB6
+  {"OR A, A", 0, cpu_OR_A_A},//0xB7
+  {"CP A, B", 0, cpu_CP_A_B},//0xB8
+  {"CP A, C", 0, cpu_CP_A_C},//0xB9
+  {"CP A, D", 0, cpu_CP_A_D},//0xBA
+  {"CP A, E", 0, cpu_CP_A_E},//0xBB
+  {"CP A, H", 0, cpu_CP_A_H},//0xBC
+  {"CP A, L", 0, cpu_CP_A_L},//0xBD
+  {"CP A, [HL]", 0, cpu_CP_A_HL},//0xBE
+  {"CP A, A", 0, cpu_CP_A_A},//0xBF
+  {"RET NZ", 0, cpu_RET_NZ},//0xC0
+  {"POP BC", 0, cpu_POP_BC},//0xC1
+  {"JP NZ, a16", 2, cpu_JP_NZ_nn},//0xC2
+  {"JP a16", 2, cpu_JP_nn},//0xC3
+  {"CALL NZ, a16", 2, cpu_CALL_NZ_nn},//0xC4
+  {"PUSH BC", 0, cpu_PUSH_BC},//0xC5
+  {"ADD A, n8", 1, cpu_ADD_A_n},//0xC6
+  {"RST $00", 0, cpu_RST_00},//0xC7
+  {"RET Z", 0, cpu_RET_Z},//0xC8
+  {"RET", 0, cpu_RET},//0xC9
+  {"JP Z, a16", 2, cpu_JP_Z_nn},//0xCA
+  {"PREFIX", 1, nullptr},//0xCB
+  {"CALL Z, a16", 2, cpu_CALL_Z_nn},//0xCC
+  {"CALL a16", 2, cpu_CALL_nn},//0xCD
+  {"ADC A, n8", 1, cpu_ADC_A_n},//0xCE
+  {"RST $08", 0, cpu_RST_08},//0xCF
+  {"RET NC", 0, cpu_RET_NC},//0xD0
+  {"POP DE", 0, cpu_POP_DE},//0xD1
+  {"JP NC,a16", 2, cpu_JP_NC_nn},//0xD2
+  {"0xD3", 0,nullptr},//0xD3
+  {"CALL NC, a16", 2, cpu_CALL_NC_nn},//0xD4
+  {"PUSH DE", 0, cpu_PUSH_DE},//0xD5
+  {"SUB A, n8", 1, cpu_SUB_A_n},//0xD6
+  {"RST $10", 0, cpu_RST_10},//0xD7
+  {"RET C", 0, cpu_RET_C},//0xD8
+  {"RETI", 0, cpu_RETI},//0xD9
+  {"JP C, a16", 2, cpu_JP_C_nn},//0xDA
+  {"0xDB", 0, nullptr},//0xDB
+  {"CALL C, a16", 2, cpu_CALL_C_nn},//0xDC
+  {"0xDD", 0, nullptr},//0xDD
+  {"SBC A, n8", 1, cpu_SBC_A_n},//0xDE
+  {"RST $18", 0, cpu_RST_18},//0xDF
+  {"LDH[a8], A", 1, cpu_LDH_n_A},//0xE0
+  {"POP HL", 0, cpu_POP_HL},//0xE1
+  {"LDH[C], A", 0, cpu_LDH_C_A},//0xE2
+  {"0xE3", 0, nullptr},//0xE3
+  {"0xE4", 0, nullptr},//0xE4
+  {"PUSH HL", 0, cpu_PUSH_HL},//0xE5
+  {"AND A, n8", 1, cpu_AND_A_n},//0xE6
+  {"RST $20", 0, cpu_RST_20},//0xE7
+  {"ADD SP, e8", 1, cpu_ADD_SP_n},//0xE8
+  {"JP HL", 0, cpu_JP_HL},//0xE9
+  {"LD [a16], A", 2, cpu_LD_A_nn},//0xEA
+  {"0xEB", 0, nullptr},//0xEB
+  {"0xEC", 0, nullptr},//0xEC
+  {"0xED", 0, nullptr},//0xED
+  {"XOR A,n8", 1, cpu_XOR_A_n},//0xEE
+  {"RST $28", 0, cpu_RST_28},//0xEF
+  {"LDH A, [a8]", 1, cpu_LDH_A_n},//0xF0
+  {"POP AF", 0, cpu_POP_AF},//0xF1
+  {"LDH A, [C]", 0, cpu_LDH_A_C},//0xF2
+  {"Dl", 0, cpu_DL},//0xF3
+  {"0xF4", 0, nullptr},//0xF4
+  {"PUSH AF", 0, cpu_PUSH_AF},//0xF5
+  {"OR A, n8", 1, cpu_OR_A_n},//0xF6
+  {"RST $30", 0, cpu_RST_30},//0xF7
+  {"LD HL, SP + e8", 1,cpu_LD_HL_SP_N},//0xF8
+  {"LD SP, HL", 0, cpu_LD_SP_HL},//0xF9
+  {"LD A, [a16]", 2, cpu_LD_A_nn},//0xFA
+  {"EL", 0, cpu_EL},//0xFB
+  {"0xFC", 0, nullptr},//0xFC
+  {"0xFD", 0, nullptr},//0xFD
+  {"CP A,n8", 1, cpu_CP_A_n},//0xFE
+  {"RST $38", 0, cpu_RST_38},//0xFF
 };
