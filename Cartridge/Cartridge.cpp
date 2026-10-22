@@ -77,3 +77,7 @@ snprintf(buff, sizeof(buff), "RAM Size: %02X", RAM_Size());
   for(int i = 0x0134;i <= 0x014C;i++) sum = sum - rom[i] - 1;
   if(sum != Checksum()) Log_WARN("HEADER CHECKSUM DOES NOT MATCH, THIS ROM MAY BE CORRUPT");
 }
+
+uint8_t Cartridge::read(uint16_t address){
+  return rom[address];
+}

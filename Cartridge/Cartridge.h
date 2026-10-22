@@ -5,7 +5,6 @@
 #include <cstdint>
 
 const int MAX_CART_SIZE = 8*1024*1024; //defining the max cartridge size can be either 1MB or 8MB
-extern uint8_t cart_data[MAX_CART_SIZE];
 extern bool is_loaded;//to check if a game is loaded
 //defining the Cartridge header
 
@@ -40,6 +39,7 @@ class Cartridge{
   std::vector<uint8_t> rom;//we use vector because we access the rom during run time
   cartridge_type_info info;
  public:
+  uint8_t read(uint16_t address);
   void print_info();
   bool load(const char* path);
   std::vector<uint8_t> Entry_point(){//hardware reserves 4bytes

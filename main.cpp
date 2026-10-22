@@ -16,14 +16,13 @@ int main(int argc, char**argv){
   if(!parser.isRomFileSet()){
     Log_ERROR("NO ROM GIVEN, RUN:gbc game.gbc");
     return 1;
-  }
-
+  } 
+  Cartridge cart;
+  if(!cart.load(parser.getRomFileName().c_str())) return 1;
+  cart.print_info();
   CPU_reset();
   CPU_read();
   CPU_write();
   
-  Cartridge cart;
-  if(!cart.load(parser.getRomFileName().c_str())) return 1;
-  cart.print_info();
   return 0;
 }

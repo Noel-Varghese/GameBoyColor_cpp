@@ -2,6 +2,7 @@
 #ifndef CPU_REG_H
 #define CPU_REG_H
 
+#include "CPU.h"
 #include <cstdint>
 
 struct GameBoyCPU{
