@@ -2,7 +2,7 @@
 #ifndef CPU_REG_H
 #define CPU_REG_H
 
-#include <stdint>
+#include <cstdint>
 
 struct GameBoyCPU{
   const char* dissassembler;//conatains name of the opcode

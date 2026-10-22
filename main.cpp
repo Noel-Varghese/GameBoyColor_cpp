@@ -3,6 +3,7 @@
 #include "Log/logger.h"
 #include "Cartridge/Cartridge.h"
 #include "CMDLineParser/CmdLineParser.h"
+#include "CPU/CPU.h"
 
 int main(int argc, char**argv){
   TCmdLineParser parser;
@@ -17,6 +18,10 @@ int main(int argc, char**argv){
     return 1;
   }
 
+  CPU_reset();
+  CPU_read();
+  CPU_write();
+  
   Cartridge cart;
   if(!cart.load(parser.getRomFileName().c_str())) return 1;
   cart.print_info();

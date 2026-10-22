@@ -3,7 +3,7 @@
 #ifndef CPU_H
 #define CPU_H
 
-#include <stdint>
+#include <cstdint>
 
 struct CPU_registers{
   struct{
@@ -54,7 +54,7 @@ struct CPU_registers{
   uint16_t PC;
 };
 
-typedef void(*CPU_EXE_OP){}
+typedef void(*CPU_EXE_OP)();
 
 void CPU_read();
 void CPU_write();

@@ -1,6 +1,6 @@
 #include "CPU_REG.h"
 
-const struct GameBoyCPU instructions = {
+const struct GameBoyCPU instructions[256] = {
   {"NOP", 0, cpu_nop},//0x00
   {"LD BC", 2, cpu_LD_BC_nn},//0x01
   {"LD (BC),S", 0, cpu_LD_BC_S},//0x02
