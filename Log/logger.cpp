@@ -32,7 +32,8 @@ void TLogger::log(const string& msg, ELogLevel logLevel){
         }
 	buff += msg;
    	buff+= "\033[0m\n";
-        cout<<buff;
+	ostream& out = (logLevel <= ELogLevel::WARN) ? cerr : cout;
+        out<<buff;
     }
 }
 

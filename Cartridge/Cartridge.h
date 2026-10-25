@@ -5,7 +5,6 @@
 #include <cstdint>
 
 const int MAX_CART_SIZE = 8*1024*1024; //defining the max cartridge size can be either 1MB or 8MB
-extern bool is_loaded;//to check if a game is loaded
 //defining the Cartridge header
 
 enum CART_TYPE{
@@ -38,10 +37,13 @@ class Cartridge{
  private:
   std::vector<uint8_t> rom;//we use vector because we access the rom during run time
   cartridge_type_info info;
+  bool loaded = false;
  public:
-  uint8_t read(uint16_t address);
+  uint8_t read(uint16_t address) const;
   void print_info();
   bool load(const char* path);
+  bool is_loaded() const{return loaded;}
+  bool is_cgb() const{return loaded && (rom[0x0143] & 0x80);}
   std::vector<uint8_t> Entry_point(){//hardware reserves 4bytes
     return std::vector<uint8_t>(rom.begin()+0x0100, rom.begin()+0x0104);//helps read multiple bytes from 0x0100 to 0x0103
   }

@@ -6,9 +6,10 @@
 #include <cstring>
 #include <cstdio>
 
-bool is_loaded = false;
 
 bool Cartridge::load(const char* path){
+  loaded = false;
+  rom.clear();
   std::ifstream file(path, std::ios::binary | std::ios::ate);
   if(!file){
     Log_ERROR("COULD NOT OPEN THE FILE");
@@ -28,14 +29,14 @@ bool Cartridge::load(const char* path){
   }
 
   info = cart_type_data[Cartridge_Type()];//points to the Cartridge type
-  is_loaded = true;
+  loaded = true;
   Log_INFO("ROM loaded: "+std::string(path)+" ( "+std::to_string((long long)size)+" bytes ");
   return true;
   
 }
 
 void Cartridge::print_info(){
-  if(!is_loaded){
+  if(!loaded){
     Log_WARN("NO ROM LOADED");
     return;
   }
@@ -78,6 +79,7 @@ snprintf(buff, sizeof(buff), "RAM Size: %02X", RAM_Size());
   if(sum != Checksum()) Log_WARN("HEADER CHECKSUM DOES NOT MATCH, THIS ROM MAY BE CORRUPT");
 }
 
-uint8_t Cartridge::read(uint16_t address){
+uint8_t Cartridge::read(uint16_t address) const{
+  if(address >= rom.size()) return 0xFF;
   return rom[address];
 }

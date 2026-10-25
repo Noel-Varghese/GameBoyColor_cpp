@@ -20,9 +20,7 @@ int main(int argc, char**argv){
   Cartridge cart;
   if(!cart.load(parser.getRomFileName().c_str())) return 1;
   cart.print_info();
+  CPU_init(&cart);
   CPU_reset();
-  CPU_read();
-  CPU_write();
-  
   return 0;
 }

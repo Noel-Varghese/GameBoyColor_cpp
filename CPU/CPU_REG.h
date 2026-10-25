@@ -8,9 +8,9 @@
 struct GameBoyCPU{
   const char* dissassembler;//conatains name of the opcode
   uint8_t op_length;//size of the operand
-  void* exe;//pointer to the instruction
+  CPU_EXE_OP exe;//pointer to the instruction
 };
 
-extern const GameBoyCPU instructions[256];
+extern const GameBoyCPU instructions[];
 
 #endif

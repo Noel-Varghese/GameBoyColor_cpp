@@ -6,7 +6,7 @@
 #include <string>
 #include <fstream>
 #include <memory>
-using namespace std;
+
 
 enum class ELogLevel{
     NONE = 0,
@@ -18,13 +18,13 @@ enum class ELogLevel{
 
 class TLogger{
   ELogLevel m_LogLevel;
-  static shared_ptr<TLogger> m_LoggerInstance;//manages the logger system
+  static std::shared_ptr<TLogger> m_LoggerInstance;//manages the logger system
  public:
   TLogger();
-  void log(const string& msg, ELogLevel loglevel);
-  void logAt(const string& msg, ELogLevel loglevel, const char* file, int line);
+  void log(const std::string& msg, ELogLevel loglevel);
+  void logAt(const std::string& msg, ELogLevel loglevel, const char* file, int line);
   void setLogLevel(ELogLevel loglevel);
-  static shared_ptr<TLogger> getInstance();
+  static std::shared_ptr<TLogger> getInstance();
 };
 
 #define Log_ERROR(msg) TLogger::getInstance()->logAt((msg), ELogLevel::ERROR, __FILE__, __LINE__)

@@ -29,14 +29,14 @@ bool TCmdLineParser::ParseCmdLine(int argc, char** argv){
       m_HelpReq = true;
       PrintHelpMessage();
       return true;
-    }else if(arg == "-r" || arg == "--RomFileName"){
+    }else if(arg == "-r" || arg == "--rom" || arg == "--RomFileName"){
       if(i+1 >= argc){
 	Log_ERROR(arg + " needs a value between e.g " + arg + " game.gbc or game.gb or game.dmg");
 	return false;
       }
       SetRomFileName(argv[++i]);
     }
-    else if(arg == "-l" || arg == "--logLevel"){
+    else if(arg == "-l" || arg == "--loglevel"){
       if(i+1 >= argc){
 	Log_ERROR(arg + " needs a value between 0 and 4");
 	return false;

@@ -2,50 +2,67 @@
 #include "CPU_REG.h"
 #include "../Cartridge/Cartridge.h"
 #include "../Log/logger.h"
+#include <cstdio>
 
-Cartridge cart;
-CPU_registers registers;
-uint8_t current_opcode = 0;
-uint32_t cpu_instruction_count = 0;
-void* cpu_current_instruction_execution = nullptr;
+static Cartridge* cart = nullptr;
+static CPU_registers registers;
+static uint8_t current_opcode = 0;
+static CPU_EXE_OP current_exec = nullptr;
 
+void CPU_init(Cartridge* c){
+  cart = c;
+}
+  
 void CPU_reset(){
   //boots after executing boot rom registers
   //needed to put the emu in the correct state
-  registers.AF = 0x01B0;
-  registers.BC = 0x0013;
-  registers.DE = 0x00D8;
-  registers.HL = 0x014D;
+  if(cart && cart->is_cgb()){
+    registers.AF = 0x1180;//Game Boy Color state
+    registers.BC = 0x0000;
+    registers.DE = 0xFF56;
+    registers.HL = 0x000D;
+  }else{
+    registers.AF = 0x01B0;//original game boy (DMG) state, used for games that are not GBC games
+    registers.BC = 0x0013;
+    registers.DE = 0x00D8;
+    registers.HL = 0x014D;
+  }
   registers.SP = 0xFFFE;
   registers.PC = 0x0100;
 }
 
-void CPU_write(){
-  current_opcode = cart.read(registers.PC++);
-  const GameBoyCPU& instruction = instructions[current_opcode];
-  cpu_current_instruction_execution = instruction.exe;
+static void CPU_fetch(){
+  current_opcode = cart->read(registers.PC++);
+  current_exec = instructions[current_opcode].exe;
 }
 
-bool CPU_read(){
-  if(!cpu_current_instruction_execution){
-    const GameBoyCPU& instruction = instructions[current_opcode];
-    const uint8_t pchi = ((registers.PC -1) & 0xFF00) >> 8;
-    const uint8_t pclo = ((registers.PC -1) & 0xFF);
-    LOG_DEBUG("Unknown instruction");
+static bool CPU_execute(){
+  if(!current_exec){
+    char buff[64];
+    snprintf(buff, sizeof(buff), "UKNOWN OPCODE %02X AT PC=%04X",
+	     current_opcode, (unsigned)(uint16_t)(registers.PC - 1));
+    Log_ERROR(std::string(buff));
     return false;
   }
-  ((CPU_EXE_OP)cpu_current_instruction_execution)();
+  current_exec();
   return true;
+}
+
+bool CPU_step(){
+  CPU_fetch();
+  
+  return CPU_execute();
 }
 
 void cpu_nop() {} //0x00
 void cpu_LD_BC_nn() {} //0x01
-void cpu_LD_BC_S() {} //0x02
+void cpu_LD_BC_A() {} //0x02
 void cpu_INC_BC() {} //0x03
 void cpu_INC_B() {} //0x04
-void cpu_DEC_B() {} //0x06
-void cpu_LD_B_n() {} //0x07
-void cpu_LD_SP_nn() {} //0x08
+void cpu_DEC_B() {} //0x05
+void cpu_RLCA() {} //0x07
+void cpu_LD_B_n() {} //0x06
+void cpu_LD_a16_SP() {} //0x08
 void cpu_ADD_HL_BC() {} //0x09
 void cpu_LD_A_BC() {} //0x0A
 void cpu_DEC_BC() {} //0x0B
@@ -69,7 +86,7 @@ void cpu_INC_E() {} //0x1C
 void cpu_DEC_E() {} //0x1D
 void cpu_LD_E_n() {} //0x1E
 void cpu_RRA() {} //0x1F
-void cpu_JR_NC_n() {} //0x20
+void cpu_JR_NZ_n() {} //0x20
 void cpu_LD_HL_nn() {} //0x21
 void cpu_LD_HL_A_INC() {} //0x22
 void cpu_INC_HL() {} //0x23
@@ -78,20 +95,20 @@ void cpu_DEC_H() {} //0x25
 void cpu_LD_H_n() {} //0x26
 void cpu_DAA() {} //0x27
 void cpu_JR_Z_n() {} //0x28
-void cpu_HL_HL() {} //0x29
+void cpu_ADD_HL_HL() {} //0x29
 void cpu_LD_A_HL_INC() {} //0x2A
 void cpu_DEC_HL() {} //0x2B
 void cpu_INC_L() {} //0x2C
 void cpu_DEC_L() {} //0x2D
 void cpu_LD_L_n() {} //0x2E
 void cpu_CPL() {} //0x2F
-void JR_NC_n() {} //0x30
-void cpu_LS_SP_nn() {} //0x31
+void cpu_JR_NC_n() {} //0x30
+void cpu_LD_SP_nn() {} //0x31
 void cpu_LD_HL_A_DEC() {} //0x32
 void cpu_INC_SP() {} //0x33
 void cpu_INC_HL_MEM() {} //0x34
 void cpu_DEC_HL_MEM() {} //0x35
-void cpu_LD_HL() {} //0x36
+void cpu_LD_HL_n() {} //0x36
 void cpu_SCF() {} //0x37
 void cpu_JR_C_n() {} //0x38
 void cpu_ADD_HL_SP() {} //0x39
@@ -265,19 +282,19 @@ void cpu_AND_A_n() {} //0xE6
 void cpu_RST_20() {} //0xE7
 void cpu_ADD_SP_n() {} //0xE8
 void cpu_JP_HL() {} //0xE9
-void cpu_LD_A_nn_A() {} //0xEA
+void cpu_LD_nn_A() {} //0xEA
 void cpu_XOR_A_n() {} //0xEE
 void cpu_RST_28() {} //0xEF
 void cpu_LDH_A_n() {} //0xF0
 void cpu_POP_AF() {} //0xF1
 void cpu_LDH_A_C() {} //0xF2
-void cpu_DL() {} //0xF3
+void cpu_DI() {} //0xF3
 void cpu_PUSH_AF() {} //0xF5
 void cpu_OR_A_n() {} //0xF6
 void cpu_RST_30() {} //0xF7
 void cpu_LD_HL_SP_N() {} //0xF8
 void cpu_LD_SP_HL() {} //0xF9
 void cpu_LD_A_nn() {} //0xFA
-void cpu_EL() {} //0xFB
+void cpu_EI() {} //0xFB
 void cpu_CP_A_n() {} //0xFE
 void cpu_RST_38() {} //0xFF   
