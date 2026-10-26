@@ -31,6 +31,15 @@ void CPU_reset(){
   registers.PC = 0x0100;
 }
 
+[[maybe_unused]]static std::string trace_line(uint16_t PC){
+  char buff[128];
+  snprintf(buff, sizeof(buff), "PC=%04X op=%02X %-12s AF=%04X BC=%04X DE=%04X HL=%04X SP=%04X",
+           PC, current_opcode, instructions[current_opcode].dissassembler,
+           registers.AF, registers.BC, registers.DE, registers.HL, registers.SP);
+  return std::string(buff);
+}
+
+
 static void CPU_fetch(){
   current_opcode = cart->read(registers.PC++);
   current_exec = instructions[current_opcode].exe;
@@ -49,8 +58,9 @@ static bool CPU_execute(){
 }
 
 bool CPU_step(){
+  [[maybe_unused]] const uint16_t PC = registers.PC;
   CPU_fetch();
-  
+  LOG_DEBUG(trace_line(PC));
   return CPU_execute();
 }
 

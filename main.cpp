@@ -22,5 +22,8 @@ int main(int argc, char**argv){
   cart.print_info();
   CPU_init(&cart);
   CPU_reset();
+  for(int i=0;i<20;i++){
+    if(!CPU_step()) return 1;
+  }
   return 0;
 }
