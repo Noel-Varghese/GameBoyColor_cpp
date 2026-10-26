@@ -4,6 +4,7 @@
 #include "Cartridge/Cartridge.h"
 #include "CMDLineParser/CmdLineParser.h"
 #include "CPU/CPU.h"
+#include "HEART/heart.h"
 
 int main(int argc, char**argv){
   TCmdLineParser parser;

@@ -9,6 +9,38 @@ static CPU_registers registers;
 static uint8_t current_opcode = 0;
 static CPU_EXE_OP current_exec = nullptr;
 
+static uint8_t fetch8(){
+  return cart->read(registers.PC++);
+}
+
+[[maybe_unused]] static uint16_t fetch16(){
+  uint8_t low = fetch8();
+  uint8_t high = fetch8();
+  return (uint16_t)((high << 8) | low);
+}
+
+static void setFlagz(bool z, bool n, bool h, bool c){
+  registers.F = (z ? FLAG_Z : 0) | (n ? FLAG_N : 0) | (h ? FLAG_H : 0) | (c ? FLAG_C : 0);
+}
+
+static void ALU_ADD(uint8_t v, uint8_t c = 0){
+  uint8_t a = registers.A;
+  uint16_t sum = (uint16_t)a+v+c;
+  registers.A = (uint8_t)sum;
+  setFlagz(registers.A == 0, false, ((a & 0x0F) + (v & 0x0F) + c) > 0x0F, sum > 0xFF);
+  //Z=result is 0, N=0for aff, H= carry out of bit 3, C=carry out of bit 7
+}
+
+static void ALU_SUB(uint8_t v, uint8_t c = 0){
+  uint8_t a = registers.A;
+  int res = (int)a-v-c;
+  registers.A = (uint8_t)res;
+  setFlagz(
+	   registers.A == 0,
+	   true,
+	   (a & 0x0F) < ((v & 0x0F) + c), res < 0);
+}
+
 void CPU_init(Cartridge* c){
   cart = c;
 }
