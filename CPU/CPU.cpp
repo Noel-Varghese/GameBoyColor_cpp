@@ -1,45 +1,64 @@
 #include "CPU.h"
 #include "CPU_REG.h"
+#include "../HEART/heart.h"
 #include "../Cartridge/Cartridge.h"
 #include "../Log/logger.h"
 #include <cstdio>
+#include <string>
 
 static Cartridge* cart = nullptr;
 static CPU_registers registers;
 static uint8_t current_opcode = 0;
 static CPU_EXE_OP current_exec = nullptr;
 
-static uint8_t fetch8(){
+static uint8_t mem_read(uint16_t addr){
+  core_advance_cpu_clock(4);
+  if(!cart) return 0xFF;
+  return cart->read(addr);
+}
+
+static uint8_t fetch8(){//means read one byte drom the address currently pointed to by PC, then inc PC
   return cart->read(registers.PC++);
 }
 
-[[maybe_unused]] static uint16_t fetch16(){
-  uint8_t low = fetch8();
+[[maybe_unused]] static uint16_t fetch16(){//combines 2 bytes into one 16-bit value
+  uint8_t low = fetch8();//little endian
   uint8_t high = fetch8();
   return (uint16_t)((high << 8) | low);
 }
 
-static void setFlagz(bool z, bool n, bool h, bool c){
+static void setFlagz(bool z, bool n, bool h, bool c){//sets the Gameboy flag
   registers.F = (z ? FLAG_Z : 0) | (n ? FLAG_N : 0) | (h ? FLAG_H : 0) | (c ? FLAG_C : 0);
 }
 
-static void ALU_ADD(uint8_t v, uint8_t c = 0){
+static void ALU_ADD(uint8_t v, bool is_c = false){
   uint8_t a = registers.A;
+  uint8_t c = (is_c && (registers.F & FLAG_C)) ? 1:0;
   uint16_t sum = (uint16_t)a+v+c;
   registers.A = (uint8_t)sum;
   setFlagz(registers.A == 0, false, ((a & 0x0F) + (v & 0x0F) + c) > 0x0F, sum > 0xFF);
   //Z=result is 0, N=0for aff, H= carry out of bit 3, C=carry out of bit 7
 }
 
-static void ALU_SUB(uint8_t v, uint8_t c = 0){
+static void ALU_SUB(uint8_t v, bool is_c = false, bool store = true){//for subtracting
   uint8_t a = registers.A;
+  uint8_t c = (is_c && (registers.F & FLAG_C))?1:0;
   int res = (int)a-v-c;
-  registers.A = (uint8_t)res;
+  if(store) registers.A = (uint8_t)res;
   setFlagz(
-	   registers.A == 0,
+	   (uint8_t)res == 0,
 	   true,
 	   (a & 0x0F) < ((v & 0x0F) + c), res < 0);
 }
+
+static void ALU_add_hl(uint16_t v){
+  uint32_t sum = (uint32_t)registers.HL + v;
+  setFlagz((registers.F & FLAG_Z) != 0, false, ((registers.HL & 0x0FFF) + (v & 0x0FFF)) > 0x0FFF,
+	   sum > 0xFFFF);
+  registers.HL = (uint16_t)sum;
+  core_advance_cpu_clocks(4);
+}
+
 
 void CPU_init(Cartridge* c){
   cart = c;
@@ -73,7 +92,7 @@ void CPU_reset(){
 
 
 static void CPU_fetch(){
-  current_opcode = cart->read(registers.PC++);
+  current_opcode = mem_read(registers.PC++);
   current_exec = instructions[current_opcode].exe;
 }
 
