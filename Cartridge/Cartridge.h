@@ -44,6 +44,7 @@ class Cartridge{
   bool load(const char* path);
   bool is_loaded() const{return loaded;}
   bool is_cgb() const{return loaded && (rom[0x0143] & 0x80);}
+  bool is_sgb() const{return loaded && (rom[0x0146] == 0x03 && rom[0x014B] == 0x33);}
   std::vector<uint8_t> Entry_point(){//hardware reserves 4bytes
     return std::vector<uint8_t>(rom.begin()+0x0100, rom.begin()+0x0104);//helps read multiple bytes from 0x0100 to 0x0103
   }

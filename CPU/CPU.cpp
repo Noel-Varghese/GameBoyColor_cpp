@@ -10,37 +10,75 @@ static Cartridge* cart = nullptr;
 static CPU_registers registers;
 static uint8_t current_opcode = 0;
 static CPU_EXE_OP current_exec = nullptr;
+static GBModel model = GBModel::AUTO;
 
-static uint8_t mem_read(uint16_t addr){
-  core_advance_cpu_clock(4);
-  if(!cart) return 0xFF;
-  return cart->read(addr);
+
+static uint8_t mem_read(uint16_t address){
+  core_advance_cpu_clock(4);//explain how many T-cycles are consumed  
+  return cart->read(address);//reads a byte from the memory
 }
 
-static uint8_t fetch8(){//means read one byte drom the address currently pointed to by PC, then inc PC
-  return cart->read(registers.PC++);
+static uint8_t fetch8(){
+  return mem_read(registers.PC++);//helps read the next byte of instructions
 }
 
-[[maybe_unused]] static uint16_t fetch16(){//combines 2 bytes into one 16-bit value
-  uint8_t low = fetch8();//little endian
+[[maybe_unused]] static uint16_t fetch16(){//reads 16 bit value from the instruction stream
+  uint8_t low = fetch8();
   uint8_t high = fetch8();
-  return (uint16_t)((high << 8) | low);
+  return (uint16_t)((high << 8) | low);//reads a 16-bit immediate value as little-endian by fetching lowByte first and then the highByte
 }
 
 static void setFlagz(bool z, bool n, bool h, bool c){//sets the Gameboy flag
   registers.F = (z ? FLAG_Z : 0) | (n ? FLAG_N : 0) | (h ? FLAG_H : 0) | (c ? FLAG_C : 0);
 }
 
-static void ALU_ADD(uint8_t v, bool is_c = false){
+
+/*
+src_r8 is the traffic police for opcodes 0x80 -> 0xBF
+the last 3 bits of the opcode already say which register
+   to use, so we only have to read them:
+
+        last 3 bits   register
+        000 (0)       B
+        001 (1)       C
+        010 (2)       D
+        011 (3)       E
+        100 (4)       H
+        101 (5)       L
+        110 (6)       [HL]  = the byte in memory at address HL
+        111 (7)       A
+
+   "& 0x07" keeps only those last 3 bits.
+   Reading [HL] touches memory, so it costs 4 extra cycles.
+
+   So every instruction in the group uses the same one-liner:
+        void cpu_ADD_A_B() { ALU_ADD(src_r8()); }
+*/
+
+static uint8_t src_r8(){
+  switch(current_opcode & 0x07){
+    case 0:return registers.B;
+    case 1:return registers.C;
+    case 2:return registers.D;
+    case 3:return registers.E;
+    case 4:return registers.H;
+    case 5:return registers.L;
+    case 6:return mem_read(registers.HL);
+    default:return registers.A;
+  }
+}
+
+static void ALU_ADD(uint8_t v, bool is_c = false){//used for addition
   uint8_t a = registers.A;
-  uint8_t c = (is_c && (registers.F & FLAG_C)) ? 1:0;
+  uint8_t c = (is_c && (registers.F & FLAG_C))?1:0;
   uint16_t sum = (uint16_t)a+v+c;
   registers.A = (uint8_t)sum;
   setFlagz(registers.A == 0, false, ((a & 0x0F) + (v & 0x0F) + c) > 0x0F, sum > 0xFF);
   //Z=result is 0, N=0for aff, H= carry out of bit 3, C=carry out of bit 7
 }
 
-static void ALU_SUB(uint8_t v, bool is_c = false, bool store = true){//for subtracting
+
+static void ALU_SUB(uint8_t v, bool is_c = 0, bool store = true){//used for subtraction
   uint8_t a = registers.A;
   uint8_t c = (is_c && (registers.F & FLAG_C))?1:0;
   int res = (int)a-v-c;
@@ -51,14 +89,20 @@ static void ALU_SUB(uint8_t v, bool is_c = false, bool store = true){//for subtr
 	   (a & 0x0F) < ((v & 0x0F) + c), res < 0);
 }
 
-static void ALU_add_hl(uint16_t v){
-  uint32_t sum = (uint32_t)registers.HL + v;
-  setFlagz((registers.F & FLAG_Z) != 0, false, ((registers.HL & 0x0FFF) + (v & 0x0FFF)) > 0x0FFF,
-	   sum > 0xFFFF);
-  registers.HL = (uint16_t)sum;
-  core_advance_cpu_clocks(4);
-}
 
+//for the 16-bit adds
+
+static void ALU_ADD_HL(uint16_t v){
+  uint32_t sum = (uint32_t)registers.HL + v;
+  setFlagz(
+    (registers.F & FLAG_Z) != 0,
+    false,
+    ((registers.HL & 0x0FFF)+(v & 0x0FFF)) > 0x0FFF,
+    sum > 0xFFFF
+  );  
+  registers.HL = (uint16_t)sum;
+  core_advance_cpu_clock(4);
+}
 
 void CPU_init(Cartridge* c){
   cart = c;
@@ -67,19 +111,41 @@ void CPU_init(Cartridge* c){
 void CPU_reset(){
   //boots after executing boot rom registers
   //needed to put the emu in the correct state
-  if(cart && cart->is_cgb()){
-    registers.AF = 0x1180;//Game Boy Color state
+  GBModel m = model;
+  if(m == GBModel::AUTO) m = (cart && cart->is_cgb()) ? GBModel::CGB : GBModel::DMG;
+  const char* name = "DMG";
+  switch(m){
+    case GBModel::CGB:
+    name = "CGB (GAME BOY COLOR)";
+    registers.AF = 0x1180;
     registers.BC = 0x0000;
     registers.DE = 0xFF56;
     registers.HL = 0x000D;
-  }else{
-    registers.AF = 0x01B0;//original game boy (DMG) state, used for games that are not GBC games
+    break;
+    case GBModel::SGB:
+    name = "SGB (SUPER GAME BOY)";
+    registers.AF = 0x0100;
+    registers.BC = 0x0014;
+    registers.DE = 0x0000;
+    registers.HL = 0xC060;
+    break;
+    case GBModel::SGB2:
+    name = "SGB2 (SUPER GAME BOY 2)";
+    registers.AF = 0xFF00;
+    registers.BC = 0x0014;
+    registers.DE = 0x0000;
+    registers.HL = 0xC060;
+    break;
+    default:
+    registers.AF = 0x01B0;
     registers.BC = 0x0013;
     registers.DE = 0x00D8;
     registers.HL = 0x014D;
+    break;
   }
   registers.SP = 0xFFFE;
   registers.PC = 0x0100;
+  Log_INFO(std::string("CPU reset, model: ") + name);
 }
 
 [[maybe_unused]]static std::string trace_line(uint16_t PC){

@@ -47,6 +47,9 @@ enum:uint8_t{
     FLAG_C = 0x10
 };
 
+
+enum class GBModel{AUTO, DMG, SGB, SGB2, CGB};//helps detect model from the Cartridge
+void CPU_set_model(GBModel m);//calls this b4 CPU reset
 void CPU_init(Cartridge* c);//tells the cpu which cart to use
 void CPU_reset();
 bool CPU_step();
