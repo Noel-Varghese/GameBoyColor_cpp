@@ -23,6 +23,14 @@ case "$MODE" in
     ;;
 esac
 
+if command -v pkg-config >/dev/null 2>&1 && pkg-config --exists sdl3; then
+  SDL_FLAGS=$(pkg-config --cflags --libs sdl3)
+else
+  echo "warning: pkg-config could not find sdl3, falling back to -lSDL3"
+  echo "         (Fedora: sudo dnf install SDL3-devel)"
+  SDL_FLAGS="-lSDL3"
+fi
+
 mapfile -t SOURCES < <(find . -name '*.cpp' -not -path './build/*')
 
 if [ ${#SOURCES[@]} -eq 0 ]; then
@@ -31,5 +39,5 @@ if [ ${#SOURCES[@]} -eq 0 ]; then
 fi
 
 echo "building ($MODE): ${#SOURCES[@]} source files"
-g++ $FLAGS "${SOURCES[@]}" -o "$OUT"
+g++ $FLAGS "${SOURCES[@]}" $SDL_FLAGS -o "$OUT"
 echo "built ./$OUT"

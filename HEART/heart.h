@@ -11,5 +11,5 @@ enum CoreResult{
 int coreInit(int argc, char** argv);//parse args, loads ROM, open window and sets the CPU
 void coreRun();//main loop
 void coreShutdown();//releases or shutsdown everything safely
-void coreAdvanceCPUClock(uint8_t clocks);//CPU call for memory access
+void core_advance_cpu_clock(uint8_t clocks);//CPU call for memory access
 void coreOnFrame();//once per frame, it manages all the events, drawing, speed limiting

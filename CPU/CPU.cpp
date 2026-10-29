@@ -80,8 +80,7 @@ static void ALU_SUB(uint8_t v, bool is_c = 0, bool store = true){//used for subt
   int res = (int)a-v-c;
   if(store) registers.A = (uint8_t)res;
   setFlagz(
-    (uint8_t)res == 0;
-	   registers.A == 0,
+	   (uint8_t)res == 0,
 	   true,
 	   (a & 0x0F) < ((v & 0x0F) + c), res < 0);
 }
@@ -125,7 +124,7 @@ void CPU_reset(){
     registers.DE = 0x0000;
     registers.HL = 0xC060;
     break;
-    case: GBModel::SGB2:
+    case GBModel::SGB2:
     name = "SGB2 (SUPER GAME BOY 2)";
     registers.AF = 0xFF00;
     registers.BC = 0x0014;
