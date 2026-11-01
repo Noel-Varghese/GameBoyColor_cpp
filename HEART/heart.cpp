@@ -45,6 +45,10 @@ int coreInit(int argc, char** argv){
     return CORE_FAIL;
   }
   //cartridge
+  if(!cart.load(parser.getRomFileName().c_str()))return CORE_FAIL;
+  cart.print_info();
+
+  //SDL window
   if(!SDL_Init(SDL_INIT_VIDEO)){
     Log_ERROR(std::string("SDL_Init failed!! : ")+SDL_GetError());
     return CORE_FAIL;
@@ -59,6 +63,7 @@ int coreInit(int argc, char** argv){
   renderer = SDL_CreateRenderer(window, nullptr);
   if(!renderer){
     Log_ERROR(std::string("SDL_CreateRenderer failed: ") + SDL_GetError());
+    coreShutdown();
     return CORE_FAIL;
   }
   /*

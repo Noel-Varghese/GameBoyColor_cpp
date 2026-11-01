@@ -1,5 +1,6 @@
 #include "CPU.h"
 #include "CPU_REG.h"
+#include "CPU_INS.h"
 #include "../HEART/heart.h"
 #include "../Cartridge/Cartridge.h"
 #include "../Log/logger.h"
@@ -12,97 +13,15 @@ static uint8_t current_opcode = 0;
 static CPU_EXE_OP current_exec = nullptr;
 static GBModel model = GBModel::AUTO;
 
-
-static uint8_t mem_read(uint16_t address){
-  core_advance_cpu_clock(4);//explain how many T-cycles are consumed  
-  return cart->read(address);//reads a byte from the memory
+void CPU_set_model(GBModel m){
+  model = m;
 }
 
-static uint8_t fetch8(){
-  return mem_read(registers.PC++);//helps read the next byte of instructions
-}
-
-[[maybe_unused]] static uint16_t fetch16(){//reads 16 bit value from the instruction stream
-  uint8_t low = fetch8();
-  uint8_t high = fetch8();
-  return (uint16_t)((high << 8) | low);//reads a 16-bit immediate value as little-endian by fetching lowByte first and then the highByte
-}
 
 static void setFlagz(bool z, bool n, bool h, bool c){//sets the Gameboy flag
   registers.F = (z ? FLAG_Z : 0) | (n ? FLAG_N : 0) | (h ? FLAG_H : 0) | (c ? FLAG_C : 0);
 }
 
-
-/*
-src_r8 is the traffic police for opcodes 0x80 -> 0xBF
-the last 3 bits of the opcode already say which register
-   to use, so we only have to read them:
-
-        last 3 bits   register
-        000 (0)       B
-        001 (1)       C
-        010 (2)       D
-        011 (3)       E
-        100 (4)       H
-        101 (5)       L
-        110 (6)       [HL]  = the byte in memory at address HL
-        111 (7)       A
-
-   "& 0x07" keeps only those last 3 bits.
-   Reading [HL] touches memory, so it costs 4 extra cycles.
-
-   So every instruction in the group uses the same one-liner:
-        void cpu_ADD_A_B() { ALU_ADD(src_r8()); }
-*/
-
-static uint8_t src_r8(){
-  switch(current_opcode & 0x07){
-    case 0:return registers.B;
-    case 1:return registers.C;
-    case 2:return registers.D;
-    case 3:return registers.E;
-    case 4:return registers.H;
-    case 5:return registers.L;
-    case 6:return mem_read(registers.HL);
-    default:return registers.A;
-  }
-}
-
-static void ALU_ADD(uint8_t v, bool is_c = false){//used for addition
-  uint8_t a = registers.A;
-  uint8_t c = (is_c && (registers.F & FLAG_C))?1:0;
-  uint16_t sum = (uint16_t)a+v+c;
-  registers.A = (uint8_t)sum;
-  setFlagz(registers.A == 0, false, ((a & 0x0F) + (v & 0x0F) + c) > 0x0F, sum > 0xFF);
-  //Z=result is 0, N=0for aff, H= carry out of bit 3, C=carry out of bit 7
-}
-
-
-static void ALU_SUB(uint8_t v, bool is_c = 0, bool store = true){//used for subtraction
-  uint8_t a = registers.A;
-  uint8_t c = (is_c && (registers.F & FLAG_C))?1:0;
-  int res = (int)a-v-c;
-  if(store) registers.A = (uint8_t)res;
-  setFlagz(
-	   (uint8_t)res == 0,
-	   true,
-	   (a & 0x0F) < ((v & 0x0F) + c), res < 0);
-}
-
-
-//for the 16-bit adds
-
-static void ALU_ADD_HL(uint16_t v){
-  uint32_t sum = (uint32_t)registers.HL + v;
-  setFlagz(
-    (registers.F & FLAG_Z) != 0,
-    false,
-    ((registers.HL & 0x0FFF)+(v & 0x0FFF)) > 0x0FFF,
-    sum > 0xFFFF
-  );  
-  registers.HL = (uint16_t)sum;
-  core_advance_cpu_clock(4);
-}
 
 void CPU_init(Cartridge* c){
   cart = c;
@@ -165,7 +84,7 @@ static void CPU_fetch(){
 static bool CPU_execute(){
   if(!current_exec){
     char buff[64];
-    snprintf(buff, sizeof(buff), "UKNOWN OPCODE %02X AT PC=%04X",
+    snprintf(buff, sizeof(buff), "UNKNOWN OPCODE %02X AT PC=%04X",
 	     current_opcode, (unsigned)(uint16_t)(registers.PC - 1));
     Log_ERROR(std::string(buff));
     return false;
