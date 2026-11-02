@@ -163,3 +163,59 @@ static void ALU_ADD_HL(uint16_t v){
   registers.HL = (uint16_t)sum;
   core_advance_cpu_clock(4);
 }
+
+//Take the current SP and add it to the immediate 8-bit value to it
+
+static uint16_t SP_plus_e8(){
+  uint8_t raw = fetch8();
+  uint16_t sp = registers.SP;//just stores the current SP locally
+  setFlagz(false, false, ((sp & 0x0F) + (raw & 0x0F)) > 0x0F, ((sp & 0x0F) + raw) > 0x0F);
+  return (uint16_t)(sp + (uint8_t)raw);
+}
+
+//Rotates of A (RLCA, RRCA, RLA, RRA)
+//Z is always 0 here
+
+static void ROTATE_RLCA(){//Rotate A Left
+  uint8_t a = registers.A, c = a >> 7;//extracts the seventh bit
+  registers.A = (uint8_t)((a << 1) | c);//moves everything to the left
+  setFlagz(false, false, false, c);
+}
+
+static void ROTATE_RRCA(){//opposite of RLCA
+  uint8_t a = registers.A, c = a & 1;
+  registers.A = (uint8_t)((a >> 1) | (c << 7));//moves everything right
+  setFlagz(false, false, false, c);
+}
+
+static void ROTATE_RLA(){//Rotate Left A through carry; bit 7 becomes Carry, old carry enters bit 0
+  uint8_t a = registers.A, old = flag_c() ? 1:0;
+  registers.A = (uint8_t)((a << 1)|old);
+  setFlagz(false, false, false, (a >> 7) != 0);
+}
+
+static void ROTATE_RRA(){//Rotate Right A through Carry; bit 0 becomes carry, old carry enters bit 7
+  uint8_t a = registers.A, old = flag_c()?1:0;
+  registers.A = (uint8_t)((a >> 1) | (old << 7));
+  setFlagz(false, false, false, (a & 1) != 0);
+}
+
+//Decimal Adjust Accumulator
+static void ALU_DAA(){//corrects A into the proper decimal/BCD representation
+  uint8_t a = registers.A, adj = 0;
+  bool car = flag_c();
+  if(!flag_n()){//if addition
+    if(flag_h() || (a & 0x0F) > 0x09) adj |= 0x06;
+    if(carry || a > 0x99){
+      adj |= 0x60;
+      car = true;
+    }
+    a += adj;
+  }else{
+    if(flag_h()) adj |= 0x06;
+    if(carry) adj |= 0x60;
+    a -= adj;
+  }
+  registers.A = a;
+  setFlagz(a == 0, flag_n(), false, car);
+}
