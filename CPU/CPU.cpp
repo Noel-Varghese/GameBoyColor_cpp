@@ -12,6 +12,8 @@ static CPU_registers registers;
 static uint8_t current_opcode = 0;
 static CPU_EXE_OP current_exec = nullptr;
 static GBModel model = GBModel::AUTO;
+static bool ime = false;
+static uint8_t ime_delay = 0;
 
 void CPU_set_model(GBModel m){
   model = m;
@@ -97,42 +99,67 @@ bool CPU_step(){
   [[maybe_unused]] const uint16_t PC = registers.PC;
   CPU_fetch();
   LOG_DEBUG(trace_line(PC));
-  return CPU_execute();
+  bool ok = CPU_execute();
+  if(ime_delay && --ime_delay == 0) ime = true;
+  return ok;
 }
 
 void cpu_nop() {} //0x00
-void cpu_LD_BC_nn() {} //0x01
-void cpu_LD_BC_A() {} //0x02
-void cpu_INC_BC() {} //0x03
-void cpu_INC_B() {} //0x04
-void cpu_DEC_B() {} //0x05
-void cpu_RLCA() {} //0x07
-void cpu_LD_B_n() {} //0x06
-void cpu_LD_a16_SP() {} //0x08
-void cpu_ADD_HL_BC() {} //0x09
-void cpu_LD_A_BC() {} //0x0A
-void cpu_DEC_BC() {} //0x0B
-void cpu_INC_C() {} //0x0C
-void cpu_DEC_C() {} //0x0D
-void cpu_LD_C_n() {} //0x0E
-void cpu_RRCA() {} //0x0F
-void cpu_STOP_n() {} //0x10
-void cpu_LD_DE_nn() {} //0x11
-void cpu_LD_DE_A() {} //0x12
-void cpu_INC_DE() {} //0x13
-void cpu_INC_D() {} //0x14
-void cpu_DEC_D() {} //0x15
-void cpu_LD_D_n() {} //0x16
-void cpu_RLA() {} //0x17
-void cpu_JR_n() {} //0x18
-void cpu_ADD_HL_DE() {} //0x19
-void cpu_LD_A_DE() {} //0x1A
-void cpu_DEC_DE() {} //0x1B
-void cpu_INC_E() {} //0x1C
-void cpu_DEC_E() {} //0x1D
-void cpu_LD_E_n() {} //0x1E
-void cpu_RRA() {} //0x1F
-void cpu_JR_NZ_n() {} //0x20
+void cpu_LD_BC_nn() { registers.BC = fetch16(); } //0x01
+void cpu_LD_BC_A() { mem_write(registers.BC, registers.A); } //0x02
+void cpu_INC_BC() {
+  registers.BC++;
+  core_advance_cpu_clock(4);
+} //0x03
+void cpu_INC_B() {
+  INC8(dest_r8());
+} //0x04
+void cpu_DEC_B() {
+  DEC8(dest_r8());
+} //0x05
+void cpu_RLCA(ROTATE_RLCA()) {} //0x07
+void cpu_LD_B_n() { set_r8(dest_r8(), fetch8()); } //0x06
+void cpu_LD_a16_SP() {
+  uint16_t address = fetch16();
+  mem_write(address, registers.SP & 0xFF);
+  mem_write(address+1, registers.SP >> 8);
+} //0x08
+void cpu_ADD_HL_BC() {ALU_ADD_HL(registers.BC);}//0x09
+void cpu_LD_A_BC() {registers.A = mem_read(registers.BC);} //0x0A
+void cpu_DEC_BC() {
+  registers.BC--;
+  core_advance_cpu_clock(4);
+} //0x0B
+void cpu_INC_C() {INC8(dest_r8());} //0x0C
+void cpu_DEC_C() {DEC8(dest_r8());} //0x0D
+void cpu_LD_C_n() {set_r8(dest_r8(), fetch8());} //0x0E
+void cpu_RRCA() {ROTATE_RRCA();} //0x0F
+void cpu_STOP_n() {
+  fetch8();
+  //To Be Continued
+} //0x10
+void cpu_LD_DE_nn() {registers.DE = fetch16();} //0x11
+void cpu_LD_DE_A() {mem_write(registers.DE, registers.A);} //0x12
+void cpu_INC_DE() {
+  registers.DE++;
+  core_advance_cpu_clock(4);
+} //0x13
+void cpu_INC_D() {INC8(dest_r8());} //0x14
+void cpu_DEC_D() {DEC8(dest_r8());} //0x15
+void cpu_LD_D_n() {set_r8(dest_r8(), fetch8());} //0x16
+void cpu_RLA() {ROTATE_RLA();} //0x17
+void cpu_JR_n() {JR(true);} //0x18
+void cpu_ADD_HL_DE() {ALU_ADD_HL(registers.DE)} //0x19
+void cpu_LD_A_DE() {registers.A = mem_read(registers.DE);} //0x1A
+void cpu_DEC_DE() {
+  registers.DE--;
+  core_advance_cpu_clock(4);
+} //0x1B
+void cpu_INC_E() {INC8(dest_r8());} //0x1C
+void cpu_DEC_E() {DEC(dest_r8());} //0x1D
+void cpu_LD_E_n() {set_r8(dest_r8());} //0x1E
+void cpu_RRA() {ROTATE_RRA();} //0x1F
+void cpu_JR_NZ_n() {JR(cond());} //0x20
 void cpu_LD_HL_nn() {} //0x21
 void cpu_LD_HL_A_INC() {} //0x22
 void cpu_INC_HL() {} //0x23

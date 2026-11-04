@@ -219,3 +219,57 @@ static void ALU_DAA(){//corrects A into the proper decimal/BCD representation
   registers.A = a;
   setFlagz(a == 0, flag_n(), false, car);
 }
+
+
+//stack functions
+//important note, the gameboy memory grows downward in memory.Push decrease SP;POP increase SP
+
+static void push16(uint16_t v){
+  mem_write(--registers.SP, v >> 8);
+  mem_write(--registers.SP, v & 0xFF);
+}
+
+static uint16_t pop16(){
+  uint8_t low = mem_write(registers.SP++);
+  uint8_t high = mem_write(registers.SP++);
+  return (uint16_t)((high << 8) | low);
+}
+
+static void PUSH(uint16_t v){
+  core_advance_cpu(4);
+  push16(v);
+}//consumes the cycles or inotherwords adds into the cycles
+
+/*
+JUMP operand is always read, even if JP is not taken so tht the PC points on the next instruction either ways
+ */
+
+static void JR(bool take){
+  int8_t offset = (int8_t)fetch8();
+  if(take){
+    registers.PC = (uint16_t)(registers.PC + offset);
+    core_advance_cpu_clock(4);
+  }
+}
+
+static void CALL(bool take){
+  uint16_t addr = fetch16();
+  if(take){
+    registers.PC = pop16();
+    core_advance_cpu_clock(4);
+  }
+}
+
+static void RET_CC(bool take){
+  core_advance_cpu_clock(4);
+  if(take){
+    registers.PC = pop16();
+    core_advance_cpu_clock(4);
+  }
+}
+
+static void RST(uint8_t tar){
+  core_advance_cpu_clock(4);
+  push16(registers.PC);
+  registers.PC = target;
+}
