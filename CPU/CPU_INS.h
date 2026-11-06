@@ -13,7 +13,7 @@ static uint8_t mem_read(uint16_t address){
   return cart->read(address);//reads a byte from the memory
 }
 
-mem_write(uint16_t address, uint8_t value){
+static void mem_write(uint16_t address, uint8_t value){
   core_advance_cpu_clock(4);
   (void)address;
   (void)value;//send the data to the memory bus; TO BE CONTINUED ONCE MEMORY_BUS.h/.cpp is done
@@ -43,16 +43,16 @@ static uint8_t get_r8(uint8_t i){
   }
 }
 
-static uint8_t set_r8(uint8_t i, uint8_t v){
+static void set_r8(uint8_t i, uint8_t v){
   switch(i & 0x07){
-  case 0: return registers.B = v; break;
-  case 1: return registers.C = v; break;
-  case 2: return registers.D = v; break;
-  case 3: return registers.E = v; break;
-  case 4: return registers.H = v; break;
-  case 5: return registers.L = v; break;
-  case 6: return mem_read(registers.HL);
-  default: return registers.A;
+  case 0: registers.B = v; break;
+  case 1: registers.C = v; break;
+  case 2: registers.D = v; break;
+  case 3: registers.E = v; break;
+  case 4: registers.H = v; break;
+  case 5: registers.L = v; break;
+  case 6: mem_write(registers.HL, v); break;
+  default: registers.A = v; break;
   }
 }
 
@@ -99,12 +99,12 @@ static void ALU_ADD(uint8_t v, bool is_c = false){//used for addition
 }
 
 //conditions for JUMP, JR, CALL, RETURN: bits 4-3
-static bool condition(){
+static bool cond(){
   switch((current_opcode >> 3) & 0x03){
-  case 0: return !FLAG_Z();
-  case 1: return FLAG_Z();
-  case 2: return !FLAG_C();
-  default: return FLAG_C();
+  case 0: return !flag_z();
+  case 1: return flag_z();
+  case 2: return !flag_c();
+  default: return flag_c();
   }
 }
 
@@ -140,14 +140,14 @@ static void INC8(uint8_t i){
   uint8_t v = get_r8(i);
   uint8_t r = (uint8_t)(v + 1);
   set_r8(i, r);
-  setFlagz(r == 0, false, (v & 0x0F) == 0x0F, FLAG_C());
+  setFlagz(r == 0, false, (v & 0x0F) == 0x0F, flag_c());
 }
 
 static void DEC8(uint8_t i){
   uint8_t v = get_r8(i);
   uint8_t r = (uint8_t)(v - 1);
   set_r8(i, r);
-  setFlagz(r == 0, true, (v & 0x0F) == 0x0F, FLAG_C());
+  setFlagz(r == 0, true, (v & 0x0F) == 0x0F, flag_c());
 }
 
 //for the 16-bit adds
@@ -206,14 +206,14 @@ static void ALU_DAA(){//corrects A into the proper decimal/BCD representation
   bool car = flag_c();
   if(!flag_n()){//if addition
     if(flag_h() || (a & 0x0F) > 0x09) adj |= 0x06;
-    if(carry || a > 0x99){
+    if(car || a > 0x99){
       adj |= 0x60;
       car = true;
     }
     a += adj;
   }else{
     if(flag_h()) adj |= 0x06;
-    if(carry) adj |= 0x60;
+    if(car) adj |= 0x60;
     a -= adj;
   }
   registers.A = a;
@@ -230,13 +230,13 @@ static void push16(uint16_t v){
 }
 
 static uint16_t pop16(){
-  uint8_t low = mem_write(registers.SP++);
-  uint8_t high = mem_write(registers.SP++);
+  uint8_t low = mem_read(registers.SP++);
+  uint8_t high = mem_read(registers.SP++);
   return (uint16_t)((high << 8) | low);
 }
 
 static void PUSH(uint16_t v){
-  core_advance_cpu(4);
+  core_advance_cpu_clock(4);
   push16(v);
 }//consumes the cycles or inotherwords adds into the cycles
 
@@ -252,11 +252,20 @@ static void JR(bool take){
   }
 }
 
-static void CALL(bool take){
-  uint16_t addr = fetch16();
+static void JP(bool take){
+  uint16_t address = fetch16();
   if(take){
-    registers.PC = pop16();
+    registers.PC = address;
     core_advance_cpu_clock(4);
+  }
+}
+
+static void CALL(bool take){
+  uint16_t address = fetch16();
+  if(take){
+    core_advance_cpu_clock(4);
+    push16(registers.PC);
+    registers.PC = address;
   }
 }
 
@@ -268,7 +277,7 @@ static void RET_CC(bool take){
   }
 }
 
-static void RST(uint8_t tar){
+static void RST(uint8_t target){
   core_advance_cpu_clock(4);
   push16(registers.PC);
   registers.PC = target;

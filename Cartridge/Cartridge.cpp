@@ -31,7 +31,6 @@ bool Cartridge::load(const char* path){
   info = cart_type_data[Cartridge_Type()];//points to the Cartridge type
   loaded = true;
   Log_INFO("ROM loaded: "+std::string(path)+" ( "+std::to_string((long long)size)+" bytes ");
-  snprintf(buff, sizeof(buff), "Global_Checksum: %04X", Global_Checksum());
   return true;
   
 }
@@ -72,7 +71,7 @@ snprintf(buff, sizeof(buff), "RAM Size: %02X", RAM_Size());
   snprintf(buff, sizeof(buff), "Checksum: %02X", Checksum());
   Log_INFO(std::string(buff));
 
-  snprintf(buff, sizeof(buff), "Global_Checksum: %02X", Global_Checksum());
+  snprintf(buff, sizeof(buff), "Global_Checksum: %04X", Global_Checksum());
   Log_INFO(std::string(buff));
   
   uint8_t sum=0;
