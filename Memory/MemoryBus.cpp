@@ -19,18 +19,69 @@ FFFF	FFFF	Interrupt Enable register (IE)
 */
 
 static Cartridge* cart = nullptr;
+static bool CGB_mode = false;
 
-static uint8_t VRAM[0x2000]; //8000 - 9FFF
+static uint8_t VRAM [2][0x2000]; //8000 - 9FFF
 static uint8_t EXTERNAL_RAM[0x2000]; //A000 - BFFF
-static uint8_t WRAM[0x2000]; //C000 - DFFF
+static uint8_t WRAM[8][0x2000]; //C000 - DFFF
+/*
+  Game Boy Color has 2 VRAM and 8 working RAMs primarly to overcome the 8-bit CPU's 16-bit addressing limiter
+*/
 static uint8_t OAM[0xA0]; //FE00-FE9F
 static uint8_t IO[0x80]; //FF00-FF7F
 static uint8_t HRAM[0x7F]; //FF80 - FFFE
 static uint8_t IE_REGISTER = 0; //FFFF
+/*
+  Game Boy Color has two major visuals
+  1.Backgrounds and window tiles
+  2.sprites(characters, objects etc etc)
+*/
+static uint8_t BG_pallete[64];//for background and window tiles
+/*
+  GBC supports
+  ->8 bg palletes
+  ->4 color panels
+  ->2 bytes per color
+  hence, 8*4*2 = 64 elements
+*/
+static uint8_t OBJECT_pallete[64];//for sprites and objects
 
+static int VRAM_BANK = 0;//stores which bank is currently selected
+static int WRAM_BANK = 1;//stores which bank is currently selected
 
-void MemoryBus_init(Cartridge* c){
+//h-blank direct memory access
+static uint16_t hdma_source = 0;//stores where the data should be copied FROM
+static uint16_t hdma_destination = 0;//stores where the data should be copied TO
+static uint8_t hdma_remains = 0;//tracks how many blocks are left to transfer
+static bool hdma_IsActive = false;//checks if transfer is active or not
+
+//helps communicate serial output from the emulator
+static std::string serial_log;
+static std::string serial_line;
+
+struct IODefault{
+  uint8_t offset;
+  uint8_t val;
+};
+
+static const IODefault PowerUP[] = {//default IO registers
+  {0x00, 0xCF}, {0x01, 0x00}, {0x04, 0xAB}, {0x05, 0x00}, {0x06, 0x00}, {0x07, 0xF8}, {0x0F, 0xE1},
+  {0x10, 0x80}, {0x11, 0xBF}, {0x12, 0xF3}, {0x13, 0xFF}, {0x14, 0xBF},
+  {0x16, 0x3F}, {0x17, 0x00}, {0x18, 0xFF}, {0x19, 0xBF},
+  {0x1A, 0x7F}, {0x1B, 0xFF}, {0x1C, 0x9F}, {0x1D, 0xFF}, {0x1E, 0xBF},
+  {0x20, 0xFF}, {0x21, 0x00}, {0x22, 0x00}, {0x23, 0xBF},
+  {0x24, 0x77}, {0x25, 0xF3}, {0x26, 0xF1},
+  {0x40, 0x91}, {0x41, 0x85}, {0x42, 0x00}, {0x43, 0x00}, {0x44, 0x00}, {0x45, 0x00},
+  {0x46, 0xFF}, {0x47, 0xFC}, {0x48, 0xFF}, {0x49, 0xFF}, {0x4A, 0x00}, {0x4B, 0x00},
+};
+
+static const IODefault PowerUpCGB[]={
+  {0x02, 0x7F}, {0x4D, 0x00}, {0x68, 0xC8}, {0x6A, 0xD0}, {0x6C, 0x00}, {0x70, 0x00},
+};
+
+void MemoryBus_init(Cartridge* c, bool CGB){
   cart = c;
+  CGB_mode = CGB;
   memset(VRAM, 0, sizeof(VRAM));
   memset(EXTERNAL_RAM, 0, sizeof(EXTERNAL_RAM));
   memset(WRAM, 0, sizeof(WRAM));
