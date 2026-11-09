@@ -3,6 +3,7 @@
 #include "../CPU/CPU.h"
 #include "../Log/logger.h"
 #include "../CMDLineParser/CmdLineParser.h"
+#include "../Memory/MemoryBus.h"
 #include <SDL3/SDL.h>
 #include <chrono>//provides tools for handling time, including durations (time intervals), time points (specific moments), and clocks (sources of time), which are used for measuring execution time, creating delays, and scheduling events
 #include <thread>//provide multithreading
@@ -66,9 +67,9 @@ int coreInit(int argc, char** argv){
     coreShutdown();
     return CORE_FAIL;
   }
-  /*
-    CPU
-   */
+  //Memory Bus
+  MemoryBus_init(&cart);
+  // CPU
   CPU_init(&cart);
   return CORE_OK;
 }

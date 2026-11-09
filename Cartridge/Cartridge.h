@@ -39,6 +39,7 @@ class Cartridge{
   cartridge_type_info info;
   bool loaded = false;
  public:
+  void write(uint16_t addr, uint8_t val);
   uint8_t read(uint16_t address) const;
   void print_info();
   bool load(const char* path);

@@ -30,7 +30,7 @@ bool Cartridge::load(const char* path){
 
   info = cart_type_data[Cartridge_Type()];//points to the Cartridge type
   loaded = true;
-  Log_INFO("ROM loaded: "+std::string(path)+" ( "+std::to_string((long long)size)+" bytes ");
+  Log_INFO("ROM loaded: "+std::string(path)+" ( "+std::to_string((long long)size)+" bytes )");
   return true;
   
 }
@@ -78,6 +78,11 @@ snprintf(buff, sizeof(buff), "RAM Size: %02X", RAM_Size());
   for(int i = 0x0134;i <= 0x014C;i++) sum = sum - rom[i] - 1;
   if(sum != Checksum()) Log_WARN("HEADER CHECKSUM DOES NOT MATCH, THIS ROM MAY BE CORRUPT");
 }
+
+void Cartridge::write(uint16_t addr, uint8_t val){
+  (void)addr;
+  (void)val;
+}//MBC bank switching
 
 uint8_t Cartridge::read(uint16_t address) const{
   if(address >= rom.size()) return 0xFF;

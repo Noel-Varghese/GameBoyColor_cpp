@@ -10,13 +10,12 @@ static inline bool flag_c(){ return (registers.F & FLAG_C) != 0; }
 
 static uint8_t mem_read(uint16_t address){
   core_advance_cpu_clock(4);//explain how many T-cycles are consumed  
-  return cart->read(address);//reads a byte from the memory
+  return MemoryBus_read(address);//reads a byte from the memory
 }
 
 static void mem_write(uint16_t address, uint8_t value){
   core_advance_cpu_clock(4);
-  (void)address;
-  (void)value;//send the data to the memory bus; TO BE CONTINUED ONCE MEMORY_BUS.h/.cpp is done
+  MemoryBus_write(address, value);//send the data to the memory bus; TO BE CONTINUED ONCE MEMORY_BUS.h/.cpp is done
 }
 
 static uint8_t fetch8(){
@@ -147,7 +146,7 @@ static void DEC8(uint8_t i){
   uint8_t v = get_r8(i);
   uint8_t r = (uint8_t)(v - 1);
   set_r8(i, r);
-  setFlagz(r == 0, true, (v & 0x0F) == 0x0F, flag_c());
+  setFlagz(r == 0, true, (v & 0x0F) == 0x00, flag_c());
 }
 
 //for the 16-bit adds

@@ -2,6 +2,7 @@
 #include "CPU_REG.h"
 #include "../HEART/heart.h"
 #include "../Cartridge/Cartridge.h"
+#include "../Memory/MemoryBus.h"
 #include "../Log/logger.h"
 #include <cstdio>
 #include <string>
