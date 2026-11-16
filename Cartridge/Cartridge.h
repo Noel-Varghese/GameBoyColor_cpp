@@ -41,6 +41,8 @@ class Cartridge{
  public:
   void write(uint16_t addr, uint8_t val);
   uint8_t read(uint16_t address) const;
+  uint8_t read_ram(uint16_t address) const;
+  void write_ram(uint16_t address,uint8_t value);
   void print_info();
   bool load(const char* path);
   bool is_loaded() const{return loaded;}

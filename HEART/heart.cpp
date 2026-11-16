@@ -68,7 +68,9 @@ int coreInit(int argc, char** argv){
     return CORE_FAIL;
   }
   //Memory Bus
-  MemoryBus_init(&cart);
+  bool cgb = cart.is_cgb();
+  MemoryBus_init(&cart, cgb);
+  CPU_set_model(cgb ? GBModel::CGB : GBModel::DMG);
   // CPU
   CPU_init(&cart);
   return CORE_OK;

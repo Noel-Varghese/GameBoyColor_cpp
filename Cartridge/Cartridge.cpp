@@ -79,6 +79,15 @@ snprintf(buff, sizeof(buff), "RAM Size: %02X", RAM_Size());
   if(sum != Checksum()) Log_WARN("HEADER CHECKSUM DOES NOT MATCH, THIS ROM MAY BE CORRUPT");
 }
 
+uint8_t Cartridge::read_ram(uint16_t address) const{
+  (void)address;
+  return 0xFF;
+}
+void Cartridge::write_ram(uint16_t address, uint8_t value){
+  (void)address;
+  (void)value;
+}
+
 void Cartridge::write(uint16_t addr, uint8_t val){
   (void)addr;
   (void)val;
