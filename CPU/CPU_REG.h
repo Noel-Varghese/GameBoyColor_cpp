@@ -11,6 +11,11 @@ struct GameBoyCPU{
   CPU_EXE_OP exe;//pointer to the instruction
 };
 
+struct GameBoyCPU_CB{
+  const char* dissassembler;
+  CPU_EXE_OP exe;
+};
+
 extern const GameBoyCPU instructions[];
 
 #endif

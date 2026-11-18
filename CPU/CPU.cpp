@@ -121,8 +121,8 @@ void cpu_INC_B() {
 void cpu_DEC_B() {
   DEC8(dest_r8());
 } //0x05
-void cpu_RLCA() {ROTATE_RLCA();} //0x07
 void cpu_LD_B_n() { set_r8(dest_r8(), fetch8()); } //0x06
+void cpu_RLCA() {ROTATE_RLCA();} //0x07
 void cpu_LD_a16_SP() {
   uint16_t address = fetch16();
   mem_write(address, registers.SP & 0xFF);
