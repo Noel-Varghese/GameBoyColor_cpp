@@ -17,5 +17,6 @@ struct GameBoyCPU_CB{
 };
 
 extern const GameBoyCPU instructions[];
+extern const GameBoyCPU CB_Prefix[];
 
 #endif

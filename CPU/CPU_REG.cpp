@@ -261,6 +261,10 @@ const struct GameBoyCPU instructions[] = {
 
 static_assert(sizeof(instructions)/sizeof(instructions[0]) == 256, "opcode table must have 256 entries");
 
+/*
+  it is a single byte opcode that signals the CPU to fetch an additional byte and execute an instruction from a seperate CB bank of instruction set.
+*/
+
 const struct GameBoyCPU_CB CB_Prefix[]{
   {"RLC B", CB_RLC_B },//0x00
   {"RLC C", CB_RLC_C}, //0x01
@@ -280,242 +284,244 @@ const struct GameBoyCPU_CB CB_Prefix[]{
   {"RRC A", CB_RRC_A}, //0x0F
   {"RL B", CB_RL_B}, //0x10
   {"RL C", CB_RL_C}, //0x11
-  {}, //0x12
-  {}, //0x13
-  {}, //0x14
-  {}, //0x15
-  {}, //0x16
-  {}, //0x17
-  {}, //0x18
-  {}, //0x19
-  {}, //0x1A
-  {}, //0x1B
-  {}, //0x1C
-  {}, //0x1D
-  {}, //0x1E
-  {}, //0x1F
-  {}, //0x20
-  {}, //0x21
-  {}, //0x22
-  {}, //0x23
-  {}, //0x24
-  {}, //0x25
-  {}, //0x26
-  {}, //0x27
-  {}, //0x28
-  {}, //0x29
-  {}, //0x2A
-  {}, //0x2B
-  {}, //0x2C
-  {}, //0x2D
-  {}, //0x2E
-  {}, //0x2F
-  {}, //0x30
-  {}, //0x31
-  {}, //0x32
-  {}, //0x33
-  {}, //0x34
-  {}, //0x35
-  {}, //0x36
-  {}, //0x37
-  {}, //0x38
-  {}, //0x39
-  {}, //0x3A
-  {}, //0x3B
-  {}, //0x3C
-  {}, //0x3D
-  {}, //0x3E
-  {}, //0x3F
-  {}, //0x40
-  {}, //0x41
-  {}, //0x42
-  {}, //0x43
-  {}, //0x44
-  {}, //0x45
-  {}, //0x46
-  {}, //0x47
-  {}, //0x48
-  {}, //0x49
-  {}, //0x4A
-  {}, //0x4B
-  {}, //0x4C
-  {}, //0x4D
-  {}, //0x4E
-  {}, //0x4F
-  {}, //0x50
-  {}, //0x51
-  {}, //0x52
-  {}, //0x53
-  {}, //0x54
-  {}, //0x55
-  {}, //0x56
-  {}, //0x57
-  {}, //0x58
-  {}, //0x59
-  {}, //0x5A
-  {}, //0x5B
-  {}, //0x5C
-  {}, //0x5D
-  {}, //0x5E
-  {}, //0x5F
-  {}, //0x60
-  {}, //0x61
-  {}, //0x62
-  {}, //0x63
-  {}, //0x64
-  {}, //0x65
-  {}, //0x66
-  {}, //0x67
-  {}, //0x68
-  {}, //0x69
-  {}, //0x6A
-  {}, //0x6B
-  {}, //0x6C
-  {}, //0x6D
-  {}, //0x6E
-  {}, //0x6F
-  {}, //0x70
-  {}, //0x71
-  {}, //0x72
-  {}, //0x73
-  {}, //0x74
-  {}, //0x75
-  {}, //0x76
-  {}, //0x77
-  {}, //0x78
-  {}, //0x79
-  {}, //0x7A
-  {}, //0x7B
-  {}, //0x7C
-  {}, //0x7D
-  {}, //0x7E
-  {}, //0x7F
-  {}, //0x80
-  {}, //0x81
-  {}, //0x82
-  {}, //0x83
-  {}, //0x84
-  {}, //0x85
-  {}, //0x86
-  {}, //0x87
-  {}, //0x88
-  {}, //0x89
-  {}, //0x8A
-  {}, //0x8B
-  {}, //0x8C
-  {}, //0x8D
-  {}, //0x8E
-  {}, //0x8F
-  {}, //0x90
-  {}, //0x91
-  {}, //0x92
-  {}, //0x93
-  {}, //0x94
-  {}, //0x95
-  {}, //0x96
-  {}, //0x97
-  {}, //0x98
-  {}, //0x99
-  {}, //0x9A
-  {}, //0x9B
-  {}, //0x9C
-  {}, //0x9D
-  {}, //0x9E
-  {}, //0x9F
-  {}, //0xA0
-  {}, //0xA1
-  {}, //0xA2
-  {}, //0xA3
-  {}, //0xA4
-  {}, //0xA5
-  {}, //0xA6
-  {}, //0xA7
-  {}, //0xA8
-  {}, //0xA9
-  {}, //0xAA
-  {}, //0xAB
-  {}, //0xAC
-  {}, //0xAD
-  {}, //0xAE
-  {}, //0xAF
-  {}, //0xB0
-  {}, //0xB1
-  {}, //0xB2
-  {}, //0xB3
-  {}, //0xB4
-  {}, //0xB5
-  {}, //0xB6
-  {}, //0xB7
-  {}, //0xB8
-  {}, //0xB9
-  {}, //0xBA
-  {}, //0xBB
-  {}, //0xBC
-  {}, //0xBD
-  {}, //0xBE
-  {}, //0xBF
-  {}, //0xC0
-  {}, //0xC1
-  {}, //0xC2
-  {}, //0xC3
-  {}, //0xC4
-  {}, //0xC5
-  {}, //0xC6
-  {}, //0xC7
-  {}, //0xC8
-  {}, //0xC9
-  {}, //0xCA
-  {}, //0xCB
-  {}, //0xCC
-  {}, //0xCD
-  {}, //0xCE
-  {}, //0xCF
-  {}, //0xD0
-  {}, //0xD1
-  {}, //0xD2
-  {}, //0xD3
-  {}, //0xD4
-  {}, //0xD5
-  {}, //0xD6
-  {}, //0xD7
-  {}, //0xD8
-  {}, //0xD9
-  {}, //0xDA
-  {}, //0xDB
-  {}, //0xDC
-  {}, //0xDD
-  {}, //0xDE
-  {}, //0xDF
-  {}, //0xE0
-  {}, //0xE1
-  {}, //0xE2
-  {}, //0xE3
-  {}, //0xE4
-  {}, //0xE5
-  {}, //0xE6
-  {}, //0xE7
-  {}, //0xE8
-  {}, //0xE9
-  {}, //0xEA
-  {}, //0xEB
-  {}, //0xEC
-  {}, //0xED
-  {}, //0xEE
-  {}, //0xEF
-  {}, //0xF0
-  {}, //0xF1
-  {}, //0xF2
-  {}, //0xF3
-  {}, //0xF4
-  {}, //0xF5
-  {}, //0xF6
-  {}, //0xF7
-  {}, //0xF8
-  {}, //0xF9
-  {}, //0xFA
-  {}, //0xFB
-  {}, //0xFC
-  {}, //0xFD
-  {}, //0xFE
-  {}, //0xFF
+  {"RL D", CB_RL_D}, //0x12
+  {"RL E", CB_RL_E}, //0x13
+  {"RL H", CB_RL_H}, //0x14
+  {"RL L", CB_RL_L}, //0x15
+  {"RL HL", CB_RL_HL}, //0x16
+  {"RL A", CB_RL_A}, //0x17
+  {"RR B", CB_RR_B}, //0x18
+  {"RR C", CB_RR_C}, //0x19
+  {"RR D", CB_RR_D}, //0x1A
+  {"RR E", CB_RR_E}, //0x1B
+  {"RR H", CB_RR_H}, //0x1C
+  {"RR L", CB_RR_L}, //0x1D
+  {"RR HL", CB_RR_HL}, //0x1E
+  {"RR A", CB_RR_A}, //0x1F
+  {"SLA B", CB_SLA_B}, //0x20
+  {"SLA C", CB_SLA_C}, //0x21
+  {"SLA D", CB_SLA_D}, //0x22
+  {"SLA E", CB_SLA_E}, //0x23
+  {"SLA H", CB_SLA_H}, //0x24
+  {"SLA L", CB_SLA_L}, //0x25
+  {"SLA HL", CB_SLA_HL}, //0x26
+  {"SLA A", CB_SLA_A}, //0x27
+  {"SRA B", CB_SRA_B}, //0x28
+  {"SRA C", CB_SRA_C}, //0x29
+  {"SRA D", CB_SRA_D}, //0x2A
+  {"SRA E", CB_SRA_E}, //0x2B
+  {"SRA H", CB_SRA_H}, //0x2C
+  {"SRA L", CB_SRA_L}, //0x2D
+  {"SRA HL", CB_SRA_HL}, //0x2E
+  {"SRA A", CB_SRA_A}, //0x2F
+  {"SWAP B", CB_SWAP_B}, //0x30
+  {"SWAP C", CB_SWAP_C}, //0x31
+  {"SWAP D", CB_SWAP_D}, //0x32
+  {"SWAP E", CB_SWAP_E}, //0x33
+  {"SWAP H", CB_SWAP_H}, //0x34
+  {"SWAP L", CB_SWAP_L}, //0x35
+  {"SWAP HL", CB_SWAP_HL}, //0x36
+  {"SWAP A", CB_SWAP_A}, //0x37
+  {"SRL B", CB_SRL_B}, //0x38
+  {"SRL C", CB_SRL_C}, //0x39
+  {"SRL D", CB_SRL_D}, //0x3A
+  {"SRL E", CB_SRL_E}, //0x3B
+  {"SRL H", CB_SRL_H}, //0x3C
+  {"SRL L", CB_SRL_L}, //0x3D
+  {"SRL HL", CB_SRL_HL}, //0x3E
+  {"SRL A", CB_SRL_A}, //0x3F
+  {"BIT 0, B", CB_BIT_0B}, //0x40
+  {"BIT 0, C", CB_BIT_0C}, //0x41
+  {"BIT 0, D", CB_BIT_0D}, //0x42
+  {"BIT 0, E", CB_BIT_0E}, //0x43
+  {"BIT 0, H", CB_BIT_0H}, //0x44
+  {"BIT 0, L", CB_BIT_0L}, //0x45
+  {"BIT 0, HL", CB_BIT_0HL}, //0x46
+  {"BIT 0, A", CB_BIT_0A}, //0x47
+  {"BIT 1, B", CB_BIT_1B}, //0x48
+  {"BIT 1, C", CB_BIT_1C}, //0x49
+  {"BIT 1, D", CB_BIT_1D}, //0x4A
+  {"BIT 1, E", CB_BIT_1E}, //0x4B
+  {"BIT 1, H", CB_BIT_1H}, //0x4C
+  {"BIT 1, L", CB_BIT_1L}, //0x4D
+  {"BIT 1, HL", CB_BIT_1HL}, //0x4E
+  {"BIT 1, A", CB_BIT_1A}, //0x4F
+  {"BIT 2, B", CB_BIT_2B}, //0x50
+  {"BIT 2, C", CB_BIT_2C}, //0x51
+  {"BIT 2, D", CB_BIT_2D}, //0x52
+  {"BIT 2, E", CB_BIT_2E}, //0x53
+  {"BIT 2, H", CB_BIT_2H}, //0x54
+  {"BIT 2, L", CB_BIT_2L}, //0x55
+  {"BIT 2, HL", CB_BIT_2HL}, //0x56
+  {"BIT 2, A", CB_BIT_2A}, //0x57
+  {"BIT 3, B", CB_BIT_3B}, //0x58
+  {"BIT 3, C", CB_BIT_3C}, //0x59
+  {"BIT 3, D", CB_BIT_3D}, //0x5A
+  {"BIT 3, E", CB_BIT_3E}, //0x5B
+  {"BIT 3, H", CB_BIT_3H}, //0x5C
+  {"BIT 3, L", CB_BIT_3L}, //0x5D
+  {"BIT 3, HL", CB_BIT_3HL}, //0x5E
+  {"BIT 3, A", CB_BIT_3A}, //0x5F
+  {"BIT 4, B", CB_BIT_4B}, //0x60
+  {"BIT 4, C", CB_BIT_4C}, //0x61
+  {"BIT 4, D", CB_BIT_4D}, //0x62
+  {"BIT 4, E", CB_BIT_4E}, //0x63
+  {"BIT 4, H", CB_BIT_4H}, //0x64
+  {"BIT 4, L", CB_BIT_4L}, //0x65
+  {"BIT 4, HL", CB_BIT_4HL}, //0x66
+  {"BIT 4, A", CB_BIT_4A}, //0x67
+  {"BIT 5, B", CB_BIT_5B}, //0x68
+  {"BIT 5, C", CB_BIT_5C}, //0x69
+  {"BIT 5, D", CB_BIT_5D}, //0x6A
+  {"BIT 5, E", CB_BIT_5E}, //0x6B
+  {"BIT 5, H", CB_BIT_5H}, //0x6C
+  {"BIT 5, L", CB_BIT_5L}, //0x6D
+  {"BIT 5, HL", CB_BIT_5HL}, //0x6E
+  {"BIT 5, A", CB_BIT_5A}, //0x6F
+  {"BIT 6, B", CB_BIT_6B}, //0x70
+  {"BIT 6, C", CB_BIT_6C}, //0x71
+  {"BIT 6, D", CB_BIT_6D}, //0x72
+  {"BIT 6, E", CB_BIT_6E}, //0x73
+  {"BIT 6, H", CB_BIT_6H}, //0x74
+  {"BIT 6, L", CB_BIT_6L}, //0x75
+  {"BIT 6, HL", CB_BIT_6HL}, //0x76
+  {"BIT 6, A", CB_BIT_6A}, //0x77
+  {"BIT 7, B", CB_BIT_7B}, //0x78
+  {"BIT 7, C", CB_BIT_7C}, //0x79
+  {"BIT 7, D", CB_BIT_7D}, //0x7A
+  {"BIT 7, E", CB_BIT_7E}, //0x7B
+  {"BIT 7, H", CB_BIT_7H}, //0x7C
+  {"BIT 7, L", CB_BIT_7L}, //0x7D
+  {"BIT 7, HL", CB_BIT_7HL}, //0x7E
+  {"BIT 7, A", CB_BIT_7A}, //0x7F
+  {"RES 0, B", CB_RES_0B}, //0x80
+  {"RES 0, C", CB_RES_0C}, //0x81
+  {"RES 0, D", CB_RES_0D}, //0x82
+  {"RES 0, E", CB_RES_0E}, //0x83
+  {"RES 0, H", CB_RES_0H}, //0x84
+  {"RES 0, L", CB_RES_0L}, //0x85
+  {"RES 0, HL", CB_RES_0HL}, //0x86
+  {"RES 0, A", CB_RES_0A}, //0x87
+  {"RES 1, B", CB_RES_1B}, //0x88
+  {"RES 1, C", CB_RES_1C}, //0x89
+  {"RES 1, D", CB_RES_1D}, //0x8A
+  {"RES 1, E", CB_RES_1E}, //0x8B
+  {"RES 1, H", CB_RES_1H}, //0x8C
+  {"RES 1, L", CB_RES_1L}, //0x8D
+  {"RES 1, HL", CB_RES_1HL}, //0x8E
+  {"RES 1, A", CB_RES_1A}, //0x8F
+  {"RES 2, B", CB_RES_2B}, //0x90
+  {"RES 2, C", CB_RES_2C}, //0x91
+  {"RES 2, D", CB_RES_2D}, //0x92
+  {"RES 2, E", CB_RES_2E}, //0x93
+  {"RES 2, H", CB_RES_2H}, //0x94
+  {"RES 2, L", CB_RES_2L}, //0x95
+  {"RES 2, HL", CB_RES_2HL}, //0x96
+  {"RES 2, A", CB_RES_2A}, //0x97
+  {"RES 3, B", CB_RES_3B}, //0x98
+  {"RES 3, C", CB_RES_3C}, //0x99
+  {"RES 3, D", CB_RES_3D}, //0x9A
+  {"RES 3, E", CB_RES_3E}, //0x9B
+  {"RES 3, H", CB_RES_3H}, //0x9C
+  {"RES 3, L", CB_RES_3L}, //0x9D
+  {"RES 3, HL", CB_RES_3HL}, //0x9E
+  {"RES 3, A", CB_RES_3A}, //0x9F
+  {"RES 4, B", CB_RES_4B}, //0xA0
+  {"RES 4, C", CB_RES_4C}, //0xA1
+  {"RES 4, D", CB_RES_4D}, //0xA2
+  {"RES 4, E", CB_RES_4E}, //0xA3
+  {"RES 4, H", CB_RES_4H}, //0xA4
+  {"RES 4, L", CB_RES_4L}, //0xA5
+  {"RES 4, HL", CB_RES_4HL}, //0xA6
+  {"RES 4, A", CB_RES_4A}, //0xA7
+  {"RES 5, B", CB_RES_5B}, //0xA8
+  {"RES 5, C", CB_RES_5C}, //0xA9
+  {"RES 5, D", CB_RES_5D}, //0xAA
+  {"RES 5, E", CB_RES_5E}, //0xAB
+  {"RES 5, H", CB_RES_5H}, //0xAC
+  {"RES 5, L", CB_RES_5L}, //0xAD
+  {"RES 5, HL", CB_RES_5HL}, //0xAE
+  {"RES 5, A", CB_RES_5A}, //0xAF
+  {"RES 6, B", CB_RES_6B}, //0xB0
+  {"RES 6, C", CB_RES_6C}, //0xB1
+  {"RES 6, D", CB_RES_6D}, //0xB2
+  {"RES 6, E", CB_RES_6E}, //0xB3
+  {"RES 6, H", CB_RES_6H}, //0xB4
+  {"RES 6, L", CB_RES_6L}, //0xB5
+  {"RES 6, HL", CB_RES_6HL}, //0xB6
+  {"RES 6, A", CB_RES_6A}, //0xB7
+  {"RES 7, B", CB_RES_7B}, //0xB8
+  {"RES 7, C", CB_RES_7C}, //0xB9
+  {"RES 7, D", CB_RES_7D}, //0xBA
+  {"RES 7, E", CB_RES_7E}, //0xBB
+  {"RES 7, H", CB_RES_7H}, //0xBC
+  {"RES 7, L", CB_RES_7L}, //0xBD
+  {"RES 7, HL", CB_RES_7HL}, //0xBE
+  {"RES 7, A", CB_RES_7A}, //0xBF
+  {"SET 0, B", CB_SET_0B}, //0xC0
+  {"SET 0, C", CB_SET_0C}, //0xC1
+  {"SET 0, D", CB_SET_0D}, //0xC2
+  {"SET 0, E", CB_SET_0E}, //0xC3
+  {"SET 0, H", CB_SET_0H}, //0xC4
+  {"SET 0, L", CB_SET_0L}, //0xC5
+  {"SET 0, HL", CB_SET_0HL}, //0xC6
+  {"SET 0, A", CB_SET_0A}, //0xC7
+  {"SET 1, B", CB_SET_1B}, //0xC8
+  {"SET 1, C", CB_SET_1C}, //0xC9
+  {"SET 1, D", CB_SET_1D}, //0xCA
+  {"SET 1, E", CB_SET_1E}, //0xCB
+  {"SET 1, H", CB_SET_1H}, //0xCC
+  {"SET 1, L", CB_SET_1L}, //0xCD
+  {"SET 1, HL", CB_SET_1HL}, //0xCE
+  {"SET 1, A", CB_SET_1A}, //0xCF
+  {"SET 2, B", CB_SET_2B}, //0xD0
+  {"SET 2, C", CB_SET_2C}, //0xD1
+  {"SET 2, D", CB_SET_2D}, //0xD2
+  {"SET 2, E", CB_SET_2E}, //0xD3
+  {"SET 2, H", CB_SET_2H}, //0xD4
+  {"SET 2, L", CB_SET_2L}, //0xD5
+  {"SET 2, HL", CB_SET_2HL}, //0xD6
+  {"SET 2, A", CB_SET_2A}, //0xD7
+  {"SET 3, B", CB_SET_3B}, //0xD8
+  {"SET 3, C", CB_SET_3C}, //0xD9
+  {"SET 3, D", CB_SET_3D}, //0xDA
+  {"SET 3, E", CB_SET_3E}, //0xDB
+  {"SET 3, H", CB_SET_3H}, //0xDC
+  {"SET 3, L", CB_SET_3L}, //0xDD
+  {"SET 3, HL", CB_SET_3HL}, //0xDE
+  {"SET 3, A", CB_SET_3A}, //0xDF
+  {"SET 4, B", CB_SET_4B}, //0xE0
+  {"SET 4, C", CB_SET_4C}, //0xE1
+  {"SET 4, D", CB_SET_4D}, //0xE2
+  {"SET 4, E", CB_SET_4E}, //0xE3
+  {"SET 4, H", CB_SET_4H}, //0xE4
+  {"SET 4, L", CB_SET_4L}, //0xE5
+  {"SET 4, HL", CB_SET_4HL}, //0xE6
+  {"SET 4, A", CB_SET_4A}, //0xE7
+  {"SET 5, B", CB_SET_5B}, //0xE8
+  {"SET 5, C", CB_SET_5C}, //0xE9
+  {"SET 5, D", CB_SET_5D}, //0xEA
+  {"SET 5, E", CB_SET_5E}, //0xEB
+  {"SET 5, H", CB_SET_5H}, //0xEC
+  {"SET 5, L", CB_SET_5L}, //0xED
+  {"SET 5, HL", CB_SET_5HL}, //0xEE
+  {"SET 5, A", CB_SET_5A}, //0xEF
+  {"SET 6, B", CB_SET_6B}, //0xF0
+  {"SET 6, C", CB_SET_6C}, //0xF1
+  {"SET 6, D", CB_SET_6D}, //0xF2
+  {"SET 6, E", CB_SET_6E}, //0xF3
+  {"SET 6, H", CB_SET_6H}, //0xF4
+  {"SET 6, L", CB_SET_6L}, //0xF5
+  {"SET 6, HL", CB_SET_6HL}, //0xF6
+  {"SET 6, A", CB_SET_6A}, //0xF7
+  {"SET 7, B", CB_SET_7B}, //0xF8
+  {"SET 7, C", CB_SET_7C}, //0xF9
+  {"SET 7, D", CB_SET_7D}, //0xFA
+  {"SET 7, E", CB_SET_7E}, //0xFB
+  {"SET 7, H", CB_SET_7H}, //0xFC
+  {"SET 7, L", CB_SET_7L}, //0xFD
+  {"SET 7, HL", CB_SET_7HL}, //0xFE
+  {"SET 7, A", CB_SET_7A}, //0xFF
 };
+
+static_assert(sizeof(CB_Prefix)/sizeof(CB_Prefix[0]))==256, "CB table must have 256 entries");
